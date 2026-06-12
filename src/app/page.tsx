@@ -9,7 +9,7 @@ import FloatingMascot from "@/components/FloatingMascot";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col" style={{ background: "#080810" }}>
+    <main className="min-h-screen bg-zinc-950 text-zinc-50 font-sans selection:bg-emerald-500/30">
       <Navbar />
       <Hero />
       <SectionCCTV />
@@ -21,4 +21,3 @@ export default function Home() {
     </main>
   );
 }
-
