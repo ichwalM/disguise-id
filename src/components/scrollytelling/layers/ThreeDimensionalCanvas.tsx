@@ -1,32 +1,46 @@
 "use client";
 
 import { useMascotStore } from "@/store/useMascotStore";
-import ThreeScene from "@/components/ThreeScene"; // Existing 3D scene component
-import MascotScene from "@/components/MascotScene"; // Existing 3D rings/effects
+import ThreeScene from "@/components/ThreeScene";
 
+/*
+ * ─── SINGLE Three.js Canvas Layer ───
+ *
+ * Previously this component imported BOTH ThreeScene (Canvas #1)
+ * and MascotScene (Canvas #2), which caused two WebGL contexts.
+ * Hero.tsx also imported MascotScene directly (Canvas #3).
+ *
+ * Now: ONE canvas only — ThreeScene (CCTV Pole + Stars + Rings).
+ * MascotScene logic is replaced by the CSS-only ForegroundMascot.
+ */
 export default function ThreeDimensionalCanvas() {
-  const scrollProgress = useMascotStore((state) => state.scrollProgress);
+  const scrollProgress = useMascotStore((s) => s.scrollProgress);
 
   return (
     <div className="absolute inset-0 -z-30 h-full w-full pointer-events-none">
-      {/* We reuse the existing ThreeScene which internally has a <Canvas> */}
-      {/* However, the existing ThreeScene component renders its own Canvas.
-          We can pass scrollY to it. But since we use GSAP scrub (0-1),
-          we'll multiply it by a large number to simulate scroll pixels for the old component.
-          Or, better yet, modify it to accept progress, but we'll try to just pass fake scrollY first.
-      */}
-      <div className="absolute inset-0 opacity-40">
+      {/* Single Three.js canvas — CCTV pole scene */}
+      <div className="absolute inset-0" style={{ opacity: 0.45 }}>
         <ThreeScene scrollY={scrollProgress * 5000} />
       </div>
 
-      {/* Orbit Rings / Midground from existing MascotScene */}
-      <div className="absolute inset-0 opacity-60 mix-blend-screen">
-        <MascotScene scrollY={scrollProgress * 5000} />
-      </div>
-
-      {/* Dark vignette gradient to blend UI */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#080810] via-transparent to-[#080810]" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#080810] via-transparent to-[#080810]" />
+      {/* Vignette: top + bottom fade for depth */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, #080810 0%, transparent 18%, transparent 82%, #080810 100%)",
+          pointerEvents: "none",
+        }}
+      />
+      {/* Vignette: left + right fade */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to right, #080810 0%, transparent 20%, transparent 80%, #080810 100%)",
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 }

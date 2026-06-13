@@ -6,21 +6,19 @@ import ForegroundMascot from "@/components/scrollytelling/layers/ForegroundMasco
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#080810] text-zinc-50 font-sans selection:bg-emerald-500/30">
+    <main className="min-h-screen bg-[#080810] text-zinc-50 font-sans">
       <Navbar />
-      
+
       <ScrollytellingWrapper>
-        {/* Layer 1 & 2: 3D Background and Midground (Rings, CCTV Pole, Stars) */}
+        {/* Layer 1: 3D Background — CCTV Pole, Stars (SINGLE Canvas) */}
         <ThreeDimensionalCanvas />
-        
-        {/* Layer 2.5: The Interactive HTML UI Storyboard (Glassmorphism cards) */}
+
+        {/* Layer 2: HTML Storyboard — all 10 sections with glassmorphism cards */}
         <StoryboardDOM />
-        
-        {/* Layer 3: Foreground Mascot with FSM Personalities */}
+
+        {/* Layer 3: Foreground Mascot — right-side spatial zone, hologram panels, FSM states */}
         <ForegroundMascot />
       </ScrollytellingWrapper>
-      
-      {/* We can keep the footer outside the scrollytelling if we want, or disable it. We'll leave it out for now since the Finale section serves as CTA. */}
     </main>
   );
 }

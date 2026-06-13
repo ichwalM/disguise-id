@@ -47,7 +47,7 @@
   --radius-4xl: 0px;
 }
 
-/* ─── Force dark background AFTER all @import overrides ─── */
+/* ─── Force dark background ─── */
 :root {
   color-scheme: dark;
 }
@@ -59,6 +59,8 @@ body {
   font-family: var(--font-inter), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent horizontal overflow on mobile */
+  overflow-x: hidden;
 }
 
 @layer base {
@@ -73,15 +75,105 @@ body {
 }
 
 @layer utilities {
+  /* ── Glassmorphism ── */
   .cyber-glass {
     backdrop-filter: blur(20px);
     background: rgba(0, 86, 179, 0.06);
     border: 1px solid rgba(0, 86, 179, 0.2);
   }
+
+  /* ── Glow utilities ── */
   .glow-blue {
     box-shadow: 0 0 24px rgba(0, 86, 179, 0.5), 0 0 60px rgba(0, 86, 179, 0.15);
   }
   .glow-red {
     box-shadow: 0 0 24px rgba(230, 33, 41, 0.5), 0 0 60px rgba(230, 33, 41, 0.15);
+  }
+  .glow-gold {
+    box-shadow: 0 0 24px rgba(255, 193, 7, 0.5), 0 0 60px rgba(255, 193, 7, 0.15);
+  }
+
+  /* ── Hide scrollbar ── */
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── HUD Corner brackets ── */
+  .hud-corners {
+    position: relative;
+  }
+  .hud-corners::before,
+  .hud-corners::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: rgba(0, 86, 179, 0.6);
+    border-style: solid;
+  }
+  .hud-corners::before {
+    top: -1px;
+    left: -1px;
+    border-width: 2px 0 0 2px;
+  }
+  .hud-corners::after {
+    bottom: -1px;
+    right: -1px;
+    border-width: 0 2px 2px 0;
+  }
+
+  /* ── Hologram text effect ── */
+  .hologram-text {
+    background: linear-gradient(
+      180deg,
+      rgba(0, 86, 179, 1) 0%,
+      rgba(0, 212, 255, 1) 50%,
+      rgba(0, 86, 179, 1) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: hologram-text-shift 3s ease-in-out infinite;
+  }
+
+  /* ── Grid background pattern ── */
+  .cyber-grid {
+    background-image:
+      linear-gradient(rgba(0, 86, 179, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 86, 179, 0.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* ── Scan line overlay ── */
+  .scanlines {
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.04) 0px,
+      rgba(0, 0, 0, 0.04) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+    pointer-events: none;
+  }
+}
+
+/* ─── Global animation keyframes ─── */
+@keyframes hologram-text-shift {
+  0%, 100% { background-position: 0% 0%; }
+  50%       { background-position: 0% 100%; }
+}
+
+/* ─── Mobile responsive: force 100% width sections ─── */
+@media (max-width: 767px) {
+  /* Scrollytelling sections on mobile become normal flow */
+  .mobile-section {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    padding: 80px 16px 32px;
   }
 }

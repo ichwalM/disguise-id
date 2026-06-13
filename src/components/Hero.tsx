@@ -1,120 +1,48 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight, Eye, Cpu, Database, ArrowDown } from "lucide-react";
-import Image from "next/image";
-import MascotScene from "./MascotScene";
+import { ArrowRight, Shield } from "lucide-react";
+import Link from "next/link";
 
-const features = [
-  { icon: Eye, label: "Live CCTV Scan", color: "#0056B3" },
-  { icon: Cpu, label: "U-Net VAE Inpainting", color: "#FFC107" },
-  { icon: Database, label: "PUSIKNAS POLRI Match", color: "#E62129" },
+const techBadges = [
+  { label: "MTCNN Face Detection", color: "#0056B3" },
+  { label: "VAE V2 Reconstruction", color: "#FFC107" },
+  { label: "ArcFace + PUSIKNAS", color: "#E62129" },
 ];
 
 export default function Hero() {
-  const [scrollY, setScrollY] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     setMounted(true);
-    const onScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const id = setInterval(() => setTick((t) => (t + 1) % 4), 600);
+    return () => clearInterval(id);
   }, []);
+
+  const dots = ".".repeat(tick);
 
   return (
     <section
-      style={{
-        backgroundColor: "#080810",
-        minHeight: "100vh",
-        position: "relative",
-        overflow: "hidden",
-        display: "flex",
-        alignItems: "center",
-      }}
+      className="relative w-full h-full flex items-center"
+      style={{ zIndex: 1 }}
     >
-      {/* ── Grid background ── */}
+      {/* ── Left content column (60% width) ── */}
       <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 0,
-          backgroundImage:
-            "linear-gradient(rgba(0,86,179,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,86,179,0.1) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
-        }}
-      />
-
-      {/* ── Left blue glow ── */}
-      <div
-        style={{
-          position: "absolute",
-          top: "-15%",
-          left: "-15%",
-          width: "700px",
-          height: "700px",
-          background: "radial-gradient(circle, rgba(0,86,179,0.22) 0%, transparent 70%)",
-          zIndex: 0,
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* ── Right red glow ── */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "-10%",
-          right: "0",
-          width: "500px",
-          height: "500px",
-          background: "radial-gradient(circle, rgba(230,33,41,0.18) 0%, transparent 70%)",
-          zIndex: 0,
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* ── CRT scanlines ── */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 1,
-          backgroundImage:
-            "repeating-linear-gradient(0deg, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 4px)",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* ── Main content ── */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 10,
-          width: "100%",
-          maxWidth: "1400px",
-          margin: "0 auto",
-          padding: "100px 32px 80px",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "48px",
-          alignItems: "center",
-        }}
+        className="relative z-10 w-full max-w-[1400px] mx-auto px-8 lg:px-16"
+        style={{ paddingTop: "80px" }}
       >
-        {/* ──── LEFT COLUMN — Text ──── */}
-        <div>
+        <div style={{ maxWidth: "620px" }}>
           {/* Status chip */}
           <div
+            className="inline-flex items-center gap-2 mb-8"
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "10px",
-              border: "1px solid rgba(0,86,179,0.5)",
-              background: "rgba(0,86,179,0.1)",
+              border: "1px solid rgba(0,86,179,0.4)",
+              background: "rgba(0,86,179,0.08)",
               backdropFilter: "blur(12px)",
-              padding: "6px 16px",
-              marginBottom: "32px",
+              padding: "7px 16px",
               fontFamily: "var(--font-jetbrains-mono), monospace",
-              fontSize: "11px",
+              fontSize: "10px",
               color: "#0056B3",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
@@ -122,12 +50,12 @@ export default function Hero() {
           >
             <span
               style={{
-                width: "8px",
-                height: "8px",
+                width: "7px",
+                height: "7px",
                 background: "#E62129",
                 borderRadius: "50%",
+                animation: "hero-ping 1.5s ease-in-out infinite",
                 display: "inline-block",
-                animation: "dg-ping 1.5s ease-in-out infinite",
               }}
             />
             SISTEM AKTIF — CCTV ONLINE
@@ -137,16 +65,17 @@ export default function Hero() {
           <h1
             style={{
               fontFamily: "var(--font-space-grotesk), sans-serif",
-              fontSize: "clamp(48px, 6.5vw, 86px)",
+              fontSize: "clamp(52px, 7vw, 96px)",
               fontWeight: 900,
-              lineHeight: 0.95,
+              lineHeight: 0.92,
               letterSpacing: "-0.03em",
               color: "#ffffff",
-              marginBottom: "24px",
+              marginBottom: "28px",
               textTransform: "uppercase",
             }}
           >
-            BONGKAR<br />
+            BONGKAR
+            <br />
             <span
               style={{
                 WebkitTextStroke: "2px #0056B3",
@@ -165,44 +94,55 @@ export default function Hero() {
               fontFamily: "var(--font-inter), sans-serif",
               fontSize: "15px",
               color: "rgba(255,255,255,0.5)",
-              lineHeight: 1.8,
+              lineHeight: 1.85,
               maxWidth: "480px",
               marginBottom: "32px",
             }}
           >
             Ketika penjahat menyamarkan wajah dengan masker atau kacamata,{" "}
-            <strong style={{ color: "rgba(255,255,255,0.85)", fontWeight: 600 }}>
+            <strong style={{ color: "rgba(255,255,255,0.88)", fontWeight: 600 }}>
               AI kami merekonstruksi kembali wajah aslinya
             </strong>{" "}
-            dari rekaman CCTV secara real-time, lalu mencocokkan dengan database DPO POLRI.
+            dari rekaman CCTV secara real-time, lalu mencocokkan dengan
+            database DPO POLRI.
           </p>
 
-          {/* Feature chips */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "36px" }}>
-            {features.map(({ icon: Icon, label, color }) => (
+          {/* Tech badges */}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px",
+              marginBottom: "36px",
+            }}
+          >
+            {techBadges.map(({ label, color }) => (
               <div
                 key={label}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
                   border: `1px solid ${color}40`,
                   background: `${color}10`,
-                  padding: "8px 14px",
+                  padding: "6px 14px",
                   fontFamily: "var(--font-jetbrains-mono), monospace",
-                  fontSize: "11px",
+                  fontSize: "10px",
                   color,
                   letterSpacing: "0.08em",
                 }}
               >
-                <Icon size={13} />
                 {label}
               </div>
             ))}
           </div>
 
           {/* CTA Buttons */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "14px", marginBottom: "48px" }}>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "14px",
+              marginBottom: "48px",
+            }}
+          >
             <button
               style={{
                 display: "flex",
@@ -211,22 +151,28 @@ export default function Hero() {
                 background: "#E62129",
                 color: "#fff",
                 border: "none",
-                padding: "15px 30px",
+                padding: "16px 32px",
                 fontFamily: "var(--font-space-grotesk), sans-serif",
                 fontWeight: 900,
-                fontSize: "13px",
+                fontSize: "12px",
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
                 cursor: "pointer",
-                transition: "opacity 0.2s",
+                transition: "all 0.2s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#c01920";
+                e.currentTarget.style.boxShadow = "0 0 30px rgba(230,33,41,0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#E62129";
+                e.currentTarget.style.boxShadow = "none";
+              }}
             >
               LIHAT DEMO SISTEM
-              <ArrowRight size={16} />
+              <ArrowRight size={15} />
             </button>
-            <a
+            <Link
               href="/dashboard"
               style={{
                 display: "flex",
@@ -234,30 +180,36 @@ export default function Hero() {
                 gap: "10px",
                 background: "transparent",
                 color: "#fff",
-                border: "2px solid rgba(255,255,255,0.25)",
-                padding: "15px 30px",
+                border: "2px solid rgba(255,255,255,0.2)",
+                padding: "16px 32px",
                 fontFamily: "var(--font-space-grotesk), sans-serif",
                 fontWeight: 900,
-                fontSize: "13px",
+                fontSize: "12px",
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
-                cursor: "pointer",
                 textDecoration: "none",
-                transition: "border-color 0.2s",
+                transition: "all 0.2s",
               }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.7)")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.25)")}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = "rgba(0,86,179,0.8)";
+                (e.currentTarget as HTMLElement).style.background = "rgba(0,86,179,0.1)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.2)";
+                (e.currentTarget as HTMLElement).style.background = "transparent";
+              }}
             >
+              <Shield size={15} />
               COMMAND CENTER
-            </a>
+            </Link>
           </div>
 
-          {/* SSIM accuracy badge */}
+          {/* Stats bar */}
           <div
             style={{
-              display: "inline-flex",
-              gap: "24px",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
+              display: "flex",
+              gap: "32px",
+              borderTop: "1px solid rgba(255,255,255,0.07)",
               paddingTop: "24px",
             }}
           >
@@ -282,7 +234,7 @@ export default function Hero() {
                   style={{
                     fontFamily: "var(--font-jetbrains-mono), monospace",
                     fontSize: "9px",
-                    color: "rgba(255,255,255,0.35)",
+                    color: "rgba(255,255,255,0.3)",
                     letterSpacing: "0.15em",
                     marginTop: "4px",
                   }}
@@ -293,43 +245,34 @@ export default function Hero() {
             ))}
           </div>
         </div>
-
-        {/* ──── RIGHT COLUMN — Mascot 3D ──── */}
-        <div
-          style={{
-            height: "600px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "relative",
-          }}
-        >
-          {mounted && <MascotScene scrollY={scrollY} />}
-        </div>
       </div>
 
       {/* ── HUD top-right ── */}
-      <div
-        style={{
-          position: "absolute",
-          top: "90px",
-          right: "24px",
-          zIndex: 10,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          gap: "5px",
-          fontFamily: "var(--font-jetbrains-mono), monospace",
-          fontSize: "10px",
-          color: "rgba(0,86,179,0.55)",
-          letterSpacing: "0.12em",
-        }}
-      >
-        <div>SYS_VER: 2.6.1</div>
-        <div>MODEL: vae_nusantara_best_v2.pth</div>
-        <div>CAM_ONLINE: 512</div>
-        <div style={{ color: "rgba(230,33,41,0.65)" }}>SCANNING...</div>
-      </div>
+      {mounted && (
+        <div
+          style={{
+            position: "absolute",
+            top: "90px",
+            right: "24px",
+            zIndex: 10,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            gap: "5px",
+            fontFamily: "var(--font-jetbrains-mono), monospace",
+            fontSize: "10px",
+            color: "rgba(0,86,179,0.5)",
+            letterSpacing: "0.12em",
+          }}
+        >
+          <div>SYS_VER: 2.6.1</div>
+          <div>MODEL: vae_nusantara_best_v2.pth</div>
+          <div>CAM_ONLINE: 512</div>
+          <div style={{ color: "rgba(230,33,41,0.65)" }}>
+            SCANNING{dots}
+          </div>
+        </div>
+      )}
 
       {/* ── Scroll hint ── */}
       <div
@@ -345,22 +288,23 @@ export default function Hero() {
           gap: "6px",
           fontFamily: "var(--font-jetbrains-mono), monospace",
           fontSize: "10px",
-          color: "rgba(255,255,255,0.2)",
+          color: "rgba(255,255,255,0.18)",
           letterSpacing: "0.2em",
-          animation: "dg-bounce 2s ease-in-out infinite",
+          animation: "hero-bounce 2s ease-in-out infinite",
         }}
       >
-        <ArrowDown size={18} />
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
         SCROLL
       </div>
 
-      {/* ── Keyframes ── */}
       <style>{`
-        @keyframes dg-ping {
+        @keyframes hero-ping {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.4; transform: scale(1.5); }
         }
-        @keyframes dg-bounce {
+        @keyframes hero-bounce {
           0%, 100% { transform: translateX(-50%) translateY(0); }
           50% { transform: translateX(-50%) translateY(8px); }
         }

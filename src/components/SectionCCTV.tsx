@@ -56,7 +56,13 @@ export default function SectionCCTV() {
   return (
     <section
       id="technology"
-      style={{ backgroundColor: "#0a0a14", padding: "128px 0", position: "relative", overflow: "hidden" }}
+      style={{
+        backgroundColor: "#0a0a14",
+        backgroundImage: `linear-gradient(135deg, rgba(0, 86, 179, 0.02) 0%, transparent 100%)`,
+        padding: "120px 0",
+        position: "relative",
+        overflow: "hidden",
+      }}
     >
       {/* Grid bg */}
       <div
@@ -68,7 +74,7 @@ export default function SectionCCTV() {
         }}
       />
 
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 48px", position: "relative", zIndex: 1 }}>
         {/* Header */}
         <div style={{ marginBottom: "80px" }}>
           <div
@@ -101,7 +107,7 @@ export default function SectionCCTV() {
         </div>
 
         {/* Steps */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
           {steps.map((step, i) => {
             const Icon = step.icon;
             return (
@@ -113,12 +119,35 @@ export default function SectionCCTV() {
                   transform: "translateY(40px)",
                   transition: `opacity 0.7s ease ${i * 0.15}s, transform 0.7s ease ${i * 0.15}s`,
                   borderLeft: `4px solid ${step.color}`,
-                  background: "rgba(255,255,255,0.04)",
-                  backdropFilter: "blur(4px)",
+                  background: `linear-gradient(135deg, rgba(0, 86, 179, 0.08) 0%, rgba(0, 86, 179, 0.04) 100%), rgba(8, 8, 16, 0.6)`,
+                  backdropFilter: "blur(20px)",
+                  border: "1px solid rgba(0, 86, 179, 0.2)",
+                  boxShadow: `
+                    0 4px 16px rgba(0, 86, 179, 0.1),
+                    0 8px 32px rgba(0, 86, 179, 0.05),
+                    inset 0 0 20px rgba(0, 86, 179, 0.05)
+                  `,
                   padding: "32px",
                   display: "flex",
                   gap: "32px",
                   alignItems: "flex-start",
+                  cursor: "pointer",
+                  transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                  animation: `card-slide-up-cctvd 0.6s ease-out ${i * 0.1}s both`,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = `
+                    0 8px 32px rgba(0, 86, 179, 0.2),
+                    0 12px 48px rgba(0, 86, 179, 0.1),
+                    inset 0 0 20px rgba(0, 86, 179, 0.1)
+                  `;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = `
+                    0 4px 16px rgba(0, 86, 179, 0.1),
+                    0 8px 32px rgba(0, 86, 179, 0.05),
+                    inset 0 0 20px rgba(0, 86, 179, 0.05)
+                  `;
                 }}
               >
                 {/* Icon + Number */}
