@@ -29,7 +29,7 @@ export default function Hero() {
     >
       {/* ── Left content column (60% width) ── */}
       <div
-        className="relative z-10 w-full max-w-[1400px] mx-auto px-8 lg:px-16"
+        className="relative z-10 w-full max-w-[1400px] mx-auto px-12 lg:px-20"
         style={{ paddingTop: "80px" }}
       >
         <div style={{ maxWidth: "620px" }}>

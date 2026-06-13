@@ -8,7 +8,7 @@ export default function SectionCTA() {
     <section
       style={{
         background: "linear-gradient(135deg, #0056B3 0%, #003d82 50%, #001f42 100%)",
-        padding: "128px 0",
+        padding: "120px 0",
         position: "relative",
         overflow: "hidden",
       }}
@@ -39,7 +39,7 @@ export default function SectionCTA() {
         style={{
           maxWidth: "1280px",
           margin: "0 auto",
-          padding: "0 24px",
+          padding: "0 48px",
           position: "relative",
           zIndex: 1,
           textAlign: "center",
@@ -158,6 +158,16 @@ export default function SectionCTA() {
               letterSpacing: "0.15em",
               textTransform: "uppercase",
               textDecoration: "none",
+              transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+              boxShadow: "0 8px 32px rgba(0, 86, 179, 0.2)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.boxShadow = "0 12px 48px rgba(0, 86, 179, 0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 8px 32px rgba(0, 86, 179, 0.2)";
             }}
           >
             MASUK COMMAND CENTER
@@ -178,6 +188,20 @@ export default function SectionCTA() {
               letterSpacing: "0.15em",
               textTransform: "uppercase",
               cursor: "pointer",
+              transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+              boxShadow: "0 0 0 transparent",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.borderColor = "rgba(255, 193, 7, 0.8)";
+              e.currentTarget.style.boxShadow = "0 8px 24px rgba(255, 193, 7, 0.15)";
+              e.currentTarget.style.color = "#FFC107";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)";
+              e.currentTarget.style.boxShadow = "0 0 0 transparent";
+              e.currentTarget.style.color = "#fff";
             }}
           >
             <Shield size={18} />

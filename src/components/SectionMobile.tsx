@@ -44,7 +44,7 @@ export default function SectionMobile() {
       style={{ zIndex: 1 }}
     >
       <div
-        className="w-full max-w-[1400px] mx-auto px-8 lg:px-16"
+        className="w-full max-w-[1400px] mx-auto px-12 lg:px-20"
         style={{ paddingTop: "80px" }}
       >
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "64px", alignItems: "center" }}>
@@ -185,11 +185,17 @@ export default function SectionMobile() {
               <div
                 style={{
                   margin: "0 12px 10px",
-                  background: "rgba(230,33,41,0.12)",
+                  background: `linear-gradient(135deg, rgba(230, 33, 41, 0.12) 0%, rgba(230, 33, 41, 0.08) 100%), rgba(8, 8, 16, 0.6)`,
                   border: "1px solid rgba(230,33,41,0.4)",
                   borderRadius: "12px",
                   padding: "14px",
                   animation: "mobile-alert-pulse 3s ease-in-out infinite",
+                  backdropFilter: "blur(10px)",
+                  boxShadow: `
+                    0 2px 8px rgba(230, 33, 41, 0.1),
+                    0 4px 16px rgba(230, 33, 41, 0.05),
+                    inset 0 0 12px rgba(230, 33, 41, 0.03)
+                  `,
                 }}
               >
                 <div

@@ -46,9 +46,31 @@ export default function SectionAI() {
   const card = (content: React.ReactNode) => (
     <div
       style={{
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(0,86,179,0.2)",
+        background: `linear-gradient(135deg, rgba(0, 86, 179, 0.08) 0%, rgba(0, 86, 179, 0.04) 100%), rgba(8, 8, 16, 0.6)`,
+        border: "1px solid rgba(0, 86, 179, 0.3)",
+        backdropFilter: "blur(20px)",
+        boxShadow: `
+          0 4px 16px rgba(0, 86, 179, 0.1),
+          0 8px 32px rgba(0, 86, 179, 0.05),
+          inset 0 0 20px rgba(0, 86, 179, 0.05)
+        `,
         overflow: "hidden",
+        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        cursor: "pointer",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = `
+          0 8px 32px rgba(0, 86, 179, 0.2),
+          0 12px 48px rgba(0, 86, 179, 0.1),
+          inset 0 0 20px rgba(0, 86, 179, 0.1)
+        `;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = `
+          0 4px 16px rgba(0, 86, 179, 0.1),
+          0 8px 32px rgba(0, 86, 179, 0.05),
+          inset 0 0 20px rgba(0, 86, 179, 0.05)
+        `;
       }}
     >
       {content}
@@ -58,7 +80,13 @@ export default function SectionAI() {
   return (
     <section
       ref={sectionRef}
-      style={{ backgroundColor: "#06060f", padding: "128px 0", position: "relative", overflow: "hidden" }}
+      style={{
+        backgroundColor: "#06060f",
+        backgroundImage: `linear-gradient(135deg, rgba(255, 193, 7, 0.02) 0%, transparent 100%)`,
+        padding: "120px 0",
+        position: "relative",
+        overflow: "hidden",
+      }}
     >
       {/* Blue glow center */}
       <div
@@ -73,7 +101,7 @@ export default function SectionAI() {
         }}
       />
 
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 48px", position: "relative", zIndex: 1 }}>
         {/* Section label */}
         <div
           style={{

@@ -32,11 +32,32 @@ function Counter({ data, started }: { data: (typeof counters)[0]; started: boole
     <div
       style={{
         padding: "40px 32px",
-        border: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(0, 86, 179, 0.3)",
+        background: `linear-gradient(135deg, rgba(0, 86, 179, 0.08) 0%, rgba(0, 86, 179, 0.04) 100%), rgba(8, 8, 16, 0.6)`,
+        backdropFilter: "blur(20px)",
+        boxShadow: `
+          0 4px 16px rgba(0, 86, 179, 0.1),
+          0 8px 32px rgba(0, 86, 179, 0.05),
+          inset 0 0 20px rgba(0, 86, 179, 0.05)
+        `,
         position: "relative",
         overflow: "hidden",
         cursor: "default",
+        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = `
+          0 8px 32px rgba(0, 86, 179, 0.2),
+          0 12px 48px rgba(0, 86, 179, 0.1),
+          inset 0 0 20px rgba(0, 86, 179, 0.1)
+        `;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = `
+          0 4px 16px rgba(0, 86, 179, 0.1),
+          0 8px 32px rgba(0, 86, 179, 0.05),
+          inset 0 0 20px rgba(0, 86, 179, 0.05)
+        `;
       }}
     >
       {/* bg glow */}
@@ -108,7 +129,13 @@ export default function SectionStats() {
   return (
     <section
       ref={ref}
-      style={{ backgroundColor: "#030308", padding: "128px 0", position: "relative", overflow: "hidden" }}
+      style={{
+        backgroundColor: "#030308",
+        backgroundImage: `linear-gradient(135deg, rgba(255, 193, 7, 0.02) 0%, transparent 100%)`,
+        padding: "120px 0",
+        position: "relative",
+        overflow: "hidden",
+      }}
       id="statistics"
     >
       {/* Bg watermark */}
@@ -137,7 +164,7 @@ export default function SectionStats() {
         </span>
       </div>
 
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 48px", position: "relative", zIndex: 1 }}>
         <div style={{ textAlign: "center", marginBottom: "64px" }}>
           <div
             style={{
@@ -169,7 +196,7 @@ export default function SectionStats() {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "16px",
+            gap: "32px",
           }}
         >
           {counters.map((c) => (
