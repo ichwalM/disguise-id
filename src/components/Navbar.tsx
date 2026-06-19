@@ -9,6 +9,7 @@ const navLinks = [
   { label: "Cara Kerja", href: "#technology" },
   { label: "AI Engine", href: "#ai-engine" },
   { label: "Statistik", href: "#statistics" },
+  { label: "Team", href: "#team" },
   { label: "Dashboard", href: "/dashboard" },
 ];
 

@@ -61,6 +61,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
