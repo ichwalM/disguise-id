@@ -6,6 +6,7 @@ import SectionMap from "@/components/SectionMap";
 import SectionStats from "@/components/SectionStats";
 import SectionCTA from "@/components/SectionCTA";
 import FloatingMascot from "@/components/FloatingMascot";
+import SectionTeam from "@/components/SectionTeam";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <SectionAI />
       <SectionMap />
       <SectionStats />
+      <SectionTeam />
       <SectionCTA />
       <FloatingMascot />
     </main>
