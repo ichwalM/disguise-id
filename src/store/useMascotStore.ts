@@ -17,14 +17,21 @@ export type InteractionState =
   | 'ARCHITECTURE_OPEN';
 
 interface MascotStore {
+  // FSM State
   currentState: MascotState;
   setState: (state: MascotState) => void;
   
+  // Interaction State
   interaction: InteractionState;
   setInteraction: (interaction: InteractionState) => void;
 
+  // Cinematic Progress (0 to 1) mapped from GSAP ScrollTrigger
   scrollProgress: number;
   setScrollProgress: (progress: number) => void;
+  
+  // Section index tracker
+  activeSectionIndex: number;
+  setActiveSectionIndex: (index: number) => void;
 }
 
 export const useMascotStore = create<MascotStore>((set) => ({
@@ -36,4 +43,7 @@ export const useMascotStore = create<MascotStore>((set) => ({
 
   scrollProgress: 0,
   setScrollProgress: (progress) => set({ scrollProgress: progress }),
+  
+  activeSectionIndex: 0,
+  setActiveSectionIndex: (index) => set({ activeSectionIndex: index }),
 }));
