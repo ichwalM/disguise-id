@@ -57,6 +57,7 @@ export default function SectionAI() {
 
   return (
     <section
+      id="ai-engine"
       ref={sectionRef}
       style={{ backgroundColor: "#06060f", padding: "128px 0", position: "relative", overflow: "hidden" }}
     >

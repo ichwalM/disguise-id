@@ -6,10 +6,10 @@ import Image from "next/image";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { label: "Cara Kerja", href: "#technology" },
-  { label: "AI Engine", href: "#ai-engine" },
-  { label: "Statistik", href: "#statistics" },
-  { label: "Team", href: "#team" },
+  { label: "Cara Kerja", href: "/#technology" },
+  { label: "AI Engine", href: "/#ai-engine" },
+  { label: "Statistik", href: "/#statistics" },
+  { label: "Team", href: "/#team" },
   { label: "Dashboard", href: "/dashboard" },
 ];
 
@@ -22,6 +22,17 @@ export default function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("/#") && typeof window !== "undefined" && window.location.pathname === "/") {
+      e.preventDefault();
+      const targetId = href.substring(2);
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
   return (
     <header
@@ -77,6 +88,7 @@ export default function Navbar() {
             <Link
               key={link.label}
               href={link.href}
+              onClick={(e) => handleNavClick(e, link.href)}
               style={{
                 fontFamily: "var(--font-jetbrains-mono), monospace",
                 fontSize: "12px",
