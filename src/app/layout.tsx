@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "DISGUISE-ID | AI Face Reconstruction & Identifikasi DPO Real-Time",
   description:
     "Sistem identifikasi wajah berbasis AI yang mampu merekonstruksi wajah tersembunyi di balik masker/penyamaran secara real-time dari kamera CCTV. Didukung U-Net VAE Nusantara & database PUSIKNAS POLRI.",
+  icons: {
+    icon: "/images/logo.ico",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
