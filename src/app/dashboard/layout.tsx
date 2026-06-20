@@ -1,27 +1,91 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
-  Users,
-  Clock,
-  FolderOpen,
+  FolderSearch,
+  BrainCircuit,
+  ScrollText,
   Settings,
   Shield,
   ChevronRight,
+  LogOut,
+  User,
+  Loader2,
 } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
+import { logoutAction } from "@/app/actions";
 
 const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Real-Time Monitor" },
-  { href: "/dashboard/dpo", icon: Users, label: "DPO Management" },
-  { href: "/dashboard/timeline", icon: Clock, label: "Timeline Forensik" },
-  { href: "/dashboard/evidence", icon: FolderOpen, label: "Evidence Center" },
+  { href: "/dashboard", icon: LayoutDashboard, label: "Overview" },
+  { href: "/dashboard/forensik", icon: FolderSearch, label: "Kasus Forensik" },
+  { href: "/dashboard/ai", icon: BrainCircuit, label: "Manajemen AI" },
+  { href: "/dashboard/log", icon: ScrollText, label: "Log Aktivitas" },
   { href: "/dashboard/settings", icon: Settings, label: "Settings" },
 ];
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+interface UserProfile {
+  full_name: string | null;
+  role_id: string | null;
+  email: string | null;
+}
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    async function loadProfile() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      // Ambil profil dari tabel mst_users (sesuai aturan skema)
+      const { data } = await supabase
+        .from("mst_users")
+        .select("full_name, role_id")
+        .eq("id", user.id)
+        .single();
+
+      setProfile({
+        full_name: data?.full_name ?? null,
+        role_id: data?.role_id ?? null,
+        email: user.email ?? null,
+      });
+    }
+
+    loadProfile();
+  }, []);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    await logoutAction();
+  }
+
+  // Ambil inisial dari nama atau email
+  const initials = profile?.full_name
+    ? profile.full_name
+        .split(" ")
+        .map((n) => n[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()
+    : profile?.email
+    ? profile.email[0].toUpperCase()
+    : "OP";
+
+  const displayName = profile?.full_name ?? profile?.email ?? "Operator";
 
   return (
     <div className="min-h-screen bg-[#0a0a14] flex flex-col md:flex-row text-white">
@@ -42,14 +106,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Status bar */}
         <div className="px-4 py-3 border-b border-[#0056B3]/10 flex items-center gap-2">
           <span className="w-2 h-2 bg-[#E62129] animate-pulse rounded-full" />
-          <span className="font-mono text-[10px] text-white/40 tracking-widest">SURVEILLANCE ACTIVE</span>
+          <span className="font-mono text-[10px] text-white/40 tracking-widest">
+            SURVEILLANCE ACTIVE
+          </span>
         </div>
 
         {/* Nav */}
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            // Active match: exact untuk /dashboard, prefix untuk sub-routes
+            const isActive =
+              item.href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
@@ -71,18 +141,60 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* AI Status */}
         <div className="p-4 border-t border-[#0056B3]/10">
           <div className="bg-[#0056B3]/10 border border-[#0056B3]/30 p-3">
-            <div className="font-mono text-[10px] text-[#0056B3] tracking-widest mb-2">AI ENGINE</div>
+            <div className="font-mono text-[10px] text-[#0056B3] tracking-widest mb-2">
+              AI ENGINE
+            </div>
             {[
               { name: "VAE Nusantara v2", status: "ACTIVE" },
               { name: "ArcFace Embed", status: "ACTIVE" },
               { name: "YOLO Detect", status: "ACTIVE" },
             ].map((m) => (
               <div key={m.name} className="flex justify-between items-center py-1">
-                <span className="font-mono text-[10px] text-white/40">{m.name}</span>
-                <span className="font-mono text-[10px] text-[#0056B3] animate-pulse">{m.status}</span>
+                <span className="font-mono text-[10px] text-white/40">
+                  {m.name}
+                </span>
+                <span className="font-mono text-[10px] text-[#0056B3] animate-pulse">
+                  {m.status}
+                </span>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* User Profile + Logout */}
+        <div className="p-4 border-t-2 border-[#0056B3]/20">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 bg-[#0056B3] flex items-center justify-center font-mono text-xs font-bold shrink-0">
+              {initials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-mono text-xs font-bold text-white truncate">
+                {displayName}
+              </div>
+              <div className="font-mono text-[9px] text-white/30 tracking-widest truncate">
+                {profile?.role_id ? `ROLE: ${profile.role_id}` : "OPERATOR"}
+              </div>
+            </div>
+          </div>
+
+          <button
+            id="logout-btn"
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="w-full flex items-center justify-center gap-2 py-2.5 
+              font-mono text-[10px] font-bold tracking-widest
+              border border-[#E62129]/30 text-[#E62129]/60
+              hover:border-[#E62129]/60 hover:text-[#E62129] hover:bg-[#E62129]/5
+              disabled:opacity-50 disabled:cursor-not-allowed
+              transition-all duration-200"
+          >
+            {loggingOut ? (
+              <Loader2 size={12} className="animate-spin" />
+            ) : (
+              <LogOut size={12} />
+            )}
+            {loggingOut ? "LOGGING OUT..." : "LOGOUT"}
+          </button>
         </div>
       </aside>
 
@@ -98,8 +210,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <span className="w-1.5 h-1.5 bg-[#FFC107] animate-pulse rounded-full" />
               AI PROCESSING
             </div>
-            <div className="w-8 h-8 bg-[#0056B3] flex items-center justify-center font-mono text-xs font-bold">
-              OP
+            <div className="hidden md:flex items-center gap-2">
+              <User size={14} className="text-white/30" />
+              <span className="font-mono text-[10px] text-white/40 truncate max-w-32">
+                {displayName}
+              </span>
             </div>
           </div>
         </div>
