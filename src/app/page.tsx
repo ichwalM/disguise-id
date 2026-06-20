@@ -6,13 +6,13 @@ import ForegroundMascot from "@/components/scrollytelling/layers/ForegroundMasco
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#080810] text-zinc-50 font-sans">
+    <main className="bg-[#080810] text-zinc-50 font-sans">
       <Navbar />
 
-      <ScrollytellingWrapper>
-        {/* Layer 1: 3D Background — CCTV Pole, Stars (SINGLE Canvas) */}
-        <ThreeDimensionalCanvas />
+      {/* Layer 1: 3D Background — CCTV Pole, Stars (SINGLE Canvas) */}
+      <ThreeDimensionalCanvas />
 
+      <ScrollytellingWrapper>
         {/* Layer 2: HTML Storyboard — all 10 sections with glassmorphism cards */}
         <StoryboardDOM />
 

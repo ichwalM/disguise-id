@@ -48,24 +48,24 @@ const HOLOGRAM_PANELS: Record<string, { title: string; sub: string; color: strin
 
 /* ─── Mascot X/Y offset per state ─── */
 const MASCOT_POSITIONS: Record<string, { x: number; y: number; scale: number; rotate: number }> = {
-  IDLE:          { x: 0,    y: 0,   scale: 1,    rotate: 0  },
-  PROBLEM:       { x: -20,  y: 10,  scale: 0.9,  rotate: 5  },
-  SCANNING:      { x: 0,    y: -10, scale: 0.95, rotate: 0  },
-  ANALYZING:     { x: 10,   y: 0,   scale: 1,    rotate: -2 },
-  RECONSTRUCTING:{ x: 15,   y: -5,  scale: 1.05, rotate: 0  },
-  MATCH_FOUND:   { x: 0,    y: -30, scale: 1.3,  rotate: 0  },
-  REPORTING:     { x: -30,  y: 0,   scale: 0.9,  rotate: 0  },
+  IDLE:          { x: 0,    y: 0,   scale: 0.7,    rotate: 0  },
+  PROBLEM:       { x: -20,  y: 10,  scale: 0.65,  rotate: 5  },
+  SCANNING:      { x: 0,    y: -10, scale: 0.68, rotate: 0  },
+  ANALYZING:     { x: 10,   y: 0,   scale: 0.7,    rotate: -2 },
+  RECONSTRUCTING:{ x: 15,   y: -5,  scale: 0.75, rotate: 0  },
+  MATCH_FOUND:   { x: 0,    y: -30, scale: 0.9,  rotate: 0  },
+  REPORTING:     { x: -30,  y: 0,   scale: 0.65,  rotate: 0  },
 };
 
 /* ─── Particle config ─── */
 const PARTICLES = Array.from({ length: 12 }, (_, i) => ({
   id: i,
-  size: 2 + (i % 3),
+  size: 1.5 + (i % 3),
   color: ["#0056B3", "#E62129", "#FFC107", "#00d4ff"][i % 4],
   delay: i * 0.5,
   duration: 4 + (i % 4),
   angle: (i / 12) * 360,
-  radius: 160 + (i % 3) * 30,
+  radius: 110 + (i % 3) * 20,
 }));
 
 export default function ForegroundMascot() {
@@ -141,7 +141,7 @@ export default function ForegroundMascot() {
           right: "4vw",
           top: "50%",
           transform: `translateY(calc(-50% + ${parallaxY}px))`,
-          width: "clamp(260px, 30vw, 400px)",
+          width: "clamp(180px, 22vw, 300px)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -240,7 +240,7 @@ export default function ForegroundMascot() {
           <div
             style={{
               position: "absolute",
-              inset: "-30px",
+              inset: "-20px",
               borderRadius: "50%",
               border: "1px solid rgba(0,86,179,0.2)",
               animation: "ring-spin 12s linear infinite",
@@ -250,7 +250,7 @@ export default function ForegroundMascot() {
           <div
             style={{
               position: "absolute",
-              inset: "-45px",
+              inset: "-30px",
               borderRadius: "50%",
               border: "1px dashed rgba(255,193,7,0.12)",
               animation: "ring-spin 18s linear infinite reverse",
@@ -283,12 +283,12 @@ export default function ForegroundMascot() {
           <Image
             src="/images/maskot.svg"
             alt="DISGUISE-ID AI Mascot"
-            width={380}
-            height={440}
+            width={260}
+            height={300}
             priority
             style={{
               objectFit: "contain",
-              width: "clamp(220px, 28vw, 380px)",
+              width: "clamp(160px, 20vw, 260px)",
               height: "auto",
               filter:
                 currentState === "MATCH_FOUND"

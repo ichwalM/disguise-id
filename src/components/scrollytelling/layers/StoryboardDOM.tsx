@@ -11,34 +11,19 @@ import SectionCTA from "@/components/SectionCTA";
 import SectionMobile from "@/components/SectionMobile";
 
 /*
- * SCROLL PROGRESS → SECTION MAPPING (12000px total)
+ * SCROLL PROGRESS → SECTION MAPPING
  *
- *  0.00 – 0.08  → HERO
- *  0.10 – 0.18  → PROBLEM STATEMENT
- *  0.20 – 0.28  → SMART CCTV INFRASTRUCTURE
- *  0.30 – 0.38  → FACE DETECTION ENGINE
- *  0.40 – 0.52  → AI RECONSTRUCTION (VAE V2)
- *  0.55 – 0.65  → RECOGNITION & MATCHING
- *  0.67 – 0.75  → SMART CITY NETWORK (MAP)
- *  0.77 – 0.85  → MOBILE INTEGRATION
- *  0.86 – 0.92  → STATISTICS
- *  0.93 – 1.00  → CALL TO ACTION
+ *  0.00 → 0.10  → HERO
+ *  0.10 → 0.20  → PROBLEM STATEMENT
+ *  0.20 → 0.30  → SMART CCTV INFRASTRUCTURE
+ *  0.30 → 0.40  → FACE DETECTION ENGINE
+ *  0.40 → 0.52  → AI RECONSTRUCTION (VAE V2)
+ *  0.52 → 0.64  → RECOGNITION & MATCHING
+ *  0.64 → 0.76  → SMART CITY NETWORK (MAP)
+ *  0.76 → 0.86  → MOBILE INTEGRATION
+ *  0.86 → 0.93  → STATISTICS
+ *  0.93 → 1.00  → CALL TO ACTION
  */
-
-/** Returns 0–1 opacity for a section window [start, end] with fade margins */
-function useOpacity(progress: number, start: number, end: number, fade = 0.03): number {
-  if (progress < start - fade || progress > end + fade) return 0;
-  if (progress >= start && progress <= end) return 1;
-  if (progress < start) return (progress - (start - fade)) / fade;
-  return (end + fade - progress) / fade;
-}
-
-/** Returns translateY for cinematic slide-in based on distance from center of window */
-function useSlide(progress: number, center: number, strength = 300): string {
-  const offset = (center - progress) * strength;
-  const clamped = Math.max(-200, Math.min(200, offset));
-  return `translateY(${clamped}px)`;
-}
 
 export default function StoryboardDOM() {
   const scrollProgress = useMascotStore((s) => s.scrollProgress);
@@ -46,47 +31,31 @@ export default function StoryboardDOM() {
 
   /* ── FSM State Manager ── */
   useEffect(() => {
-    if (scrollProgress < 0.09)       setMascotState("IDLE");
-    else if (scrollProgress < 0.19)  setMascotState("PROBLEM");
-    else if (scrollProgress < 0.29)  setMascotState("SCANNING");
+    if (scrollProgress < 0.10)       setMascotState("IDLE");
+    else if (scrollProgress < 0.20)  setMascotState("PROBLEM");
+    else if (scrollProgress < 0.30)  setMascotState("SCANNING");
     else if (scrollProgress < 0.46)  setMascotState("ANALYZING");
-    else if (scrollProgress < 0.66)  setMascotState("RECONSTRUCTING");
+    else if (scrollProgress < 0.64)  setMascotState("RECONSTRUCTING");
     else if (scrollProgress < 0.76)  setMascotState("MATCH_FOUND");
-    else if (scrollProgress < 0.92)  setMascotState("REPORTING");
+    else if (scrollProgress < 0.93)  setMascotState("REPORTING");
     else                              setMascotState("IDLE");
   }, [scrollProgress, setMascotState]);
 
-  const p = scrollProgress;
-
   return (
-    <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
+    <div className="relative z-20">
 
       {/* ═══════════════════════════════════════════════════
           01. HERO
       ═══════════════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0 will-change-transform"
-        style={{
-          opacity: useOpacity(p, 0, 0.08),
-          transform: useSlide(p, 0.04, 280),
-        }}
-      >
-        <div className="pointer-events-auto h-full flex items-center">
-          <Hero />
-        </div>
-      </div>
+      <section className="min-h-screen flex items-center py-20 px-6 lg:px-12">
+        <Hero />
+      </section>
 
       {/* ═══════════════════════════════════════════════════
           02. PROBLEM STATEMENT
       ═══════════════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0 flex items-center justify-center will-change-transform"
-        style={{
-          opacity: useOpacity(p, 0.10, 0.18),
-          transform: useSlide(p, 0.14, 300),
-        }}
-      >
-        <div className="pointer-events-auto max-w-4xl mx-auto px-8 text-center">
+      <section className="min-h-[80vh] flex items-center justify-center py-24 px-6 lg:px-12">
+        <div className="max-w-4xl mx-auto text-center">
           <div
             style={{
               background: "rgba(8,8,16,0.75)",
@@ -115,7 +84,7 @@ export default function StoryboardDOM() {
                 letterSpacing: "-0.03em",
                 lineHeight: 1,
                 marginBottom: "24px",
-                filter: "drop-shadow(0 0 30px rgba(230,33,41,0.5))",
+                filter: "drop-shadow(0 0 30px rgba(230,33,41,0.6))",
               }}
             >
               THE DISGUISE
@@ -167,38 +136,24 @@ export default function StoryboardDOM() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════
           03. SMART CCTV INFRASTRUCTURE
       ═══════════════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0 will-change-transform"
-        style={{
-          opacity: useOpacity(p, 0.20, 0.28),
-          transform: useSlide(p, 0.24, 280),
-        }}
-      >
-        <div className="pointer-events-auto h-full flex items-center">
-          <SectionCCTV />
-        </div>
-      </div>
+      <section className="py-24 px-6 lg:px-12">
+        <SectionCCTV />
+      </section>
 
       {/* ═══════════════════════════════════════════════════
           04. FACE DETECTION ENGINE
       ═══════════════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0 flex items-center will-change-transform"
-        style={{
-          opacity: useOpacity(p, 0.30, 0.38),
-          transform: useSlide(p, 0.34, 300),
-        }}
-      >
-        <div className="pointer-events-auto w-full max-w-[1400px] mx-auto px-8 lg:px-16">
+      <section className="py-24 px-6 lg:px-12">
+        <div className="w-full max-w-[1400px] mx-auto">
           <div
             style={{
               maxWidth: "560px",
-              marginLeft: "auto", /* right-align: sits beside mascot on left side */
+              marginLeft: "auto",
               background: "rgba(8,8,16,0.8)",
               backdropFilter: "blur(24px)",
               border: "1px solid rgba(0,86,179,0.25)",
@@ -291,35 +246,21 @@ export default function StoryboardDOM() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════
           05. AI RECONSTRUCTION (VAE V2)
       ═══════════════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0 will-change-transform"
-        style={{
-          opacity: useOpacity(p, 0.40, 0.52),
-          transform: useSlide(p, 0.46, 280),
-        }}
-      >
-        <div className="pointer-events-auto h-full flex items-center">
-          <SectionAI />
-        </div>
-      </div>
+      <section className="py-24 px-6 lg:px-12">
+        <SectionAI />
+      </section>
 
       {/* ═══════════════════════════════════════════════════
           06. RECOGNITION & MATCHING (SSIM Counter)
       ═══════════════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0 flex flex-col items-center justify-end pb-24 will-change-transform"
-        style={{
-          opacity: useOpacity(p, 0.55, 0.65),
-          transform: useSlide(p, 0.60, 300),
-        }}
-      >
+      <section className="py-24 px-6 lg:px-12 flex flex-col items-center justify-center">
         <div
-          className="pointer-events-auto text-center"
+          className="text-center"
           style={{
             background: "rgba(8,8,16,0.85)",
             backdropFilter: "blur(32px)",
@@ -371,9 +312,7 @@ export default function StoryboardDOM() {
               fontVariantNumeric: "tabular-nums",
             }}
           >
-            {p < 0.60
-              ? `${Math.min(94.74, ((p - 0.55) / 0.05) * 94.74).toFixed(2)}`
-              : "94.74"}
+            94.74
             <span style={{ fontSize: "0.4em", color: "#E62129" }}>%</span>
           </div>
           <div
@@ -389,67 +328,35 @@ export default function StoryboardDOM() {
             STRUCTURAL SIMILARITY INDEX — DPO IDENTIFIED
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════
           07. SMART CITY NETWORK
       ═══════════════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0 will-change-transform"
-        style={{
-          opacity: useOpacity(p, 0.67, 0.75),
-          transform: useSlide(p, 0.71, 280),
-        }}
-      >
-        <div className="pointer-events-auto h-full flex items-center">
-          <SectionMap />
-        </div>
-      </div>
+      <section className="py-24 px-6 lg:px-12">
+        <SectionMap />
+      </section>
 
       {/* ═══════════════════════════════════════════════════
           08. MOBILE INTEGRATION
       ═══════════════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0 will-change-transform"
-        style={{
-          opacity: useOpacity(p, 0.77, 0.85),
-          transform: useSlide(p, 0.81, 280),
-        }}
-      >
-        <div className="pointer-events-auto h-full flex items-center">
-          <SectionMobile />
-        </div>
-      </div>
+      <section className="py-24 px-6 lg:px-12">
+        <SectionMobile />
+      </section>
 
       {/* ═══════════════════════════════════════════════════
           09. STATISTICS
       ═══════════════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0 will-change-transform"
-        style={{
-          opacity: useOpacity(p, 0.86, 0.92),
-          transform: useSlide(p, 0.89, 280),
-        }}
-      >
-        <div className="pointer-events-auto h-full flex items-center">
-          <SectionStats />
-        </div>
-      </div>
+      <section className="py-24 px-6 lg:px-12">
+        <SectionStats />
+      </section>
 
       {/* ═══════════════════════════════════════════════════
           10. CALL TO ACTION (FINALE)
       ═══════════════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0 will-change-transform"
-        style={{
-          opacity: useOpacity(p, 0.93, 1.0),
-          transform: useSlide(p, 0.96, 280),
-        }}
-      >
-        <div className="pointer-events-auto h-full flex items-center">
-          <SectionCTA />
-        </div>
-      </div>
+      <section className="py-24 px-6 lg:px-12">
+        <SectionCTA />
+      </section>
 
       <style>{`
         @keyframes problem-pulse {

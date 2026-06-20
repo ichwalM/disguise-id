@@ -22,18 +22,20 @@ function CCTVPole({ scrollY }: CCTVPoleProps) {
   const cameraGroupRef = useRef<THREE.Group>(null);
   const ring1Ref = useRef<THREE.Mesh>(null);
   const ring2Ref = useRef<THREE.Mesh>(null);
+  const ring3Ref = useRef<THREE.Mesh>(null);
   const radarRef = useRef<THREE.Mesh>(null);
   const solarGroupRef = useRef<THREE.Group>(null);
   const particlesRef = useRef<THREE.Points>(null);
+  const poleRef = useRef<THREE.Group>(null);
 
   // Particle system
   const particles = useMemo(() => {
-    const count = 120;
+    const count = 200;
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 6;
-      positions[i * 3 + 1] = Math.random() * 8 - 2;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 6;
+      positions[i * 3] = (Math.random() - 0.5) * 10;
+      positions[i * 3 + 1] = Math.random() * 12 - 3;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
     }
     return positions;
   }, []);
@@ -42,38 +44,50 @@ function CCTVPole({ scrollY }: CCTVPoleProps) {
     const t = state.clock.elapsedTime;
     const scroll = scrollY * 0.003; // normalize scroll to rotation
 
-    // CCTV Camera pan based on scroll + sine wave
+    // CCTV Camera pan and tilt based on scroll + sine wave
     if (cameraGroupRef.current) {
-      cameraGroupRef.current.rotation.y =
-        Math.sin(t * 0.6) * 0.6 + scroll * 0.8;
+      cameraGroupRef.current.rotation.y = Math.sin(t * 0.6) * 0.8 + scroll * 0.8;
+      cameraGroupRef.current.rotation.x = Math.sin(t * 0.4) * 0.15;
     }
 
     // Orbiting tech rings
     if (ring1Ref.current) {
       ring1Ref.current.rotation.x = t * 0.8;
       ring1Ref.current.rotation.z = t * 0.4;
+      ring1Ref.current.position.y = 5.5 + Math.sin(t * 0.5) * 0.2;
     }
     if (ring2Ref.current) {
       ring2Ref.current.rotation.y = t * 1.2;
       ring2Ref.current.rotation.z = -t * 0.3;
+      ring2Ref.current.position.y = 5.5 + Math.cos(t * 0.5) * 0.2;
+    }
+    if (ring3Ref.current) {
+      ring3Ref.current.rotation.x = -t * 0.6;
+      ring3Ref.current.rotation.y = t * 0.9;
+      ring3Ref.current.position.y = 6.0 + Math.sin(t * 0.4) * 0.3;
     }
 
     // Radar sweep
     if (radarRef.current) {
-      radarRef.current.rotation.z = t * 2;
-      (radarRef.current.material as THREE.MeshBasicMaterial).opacity =
-        0.3 + Math.sin(t * 3) * 0.2;
+      radarRef.current.rotation.z = t * 2.5;
+      (radarRef.current.material as THREE.MeshBasicMaterial).opacity = 0.2 + Math.sin(t * 3) * 0.3;
     }
 
-    // Solar panel subtle tilt
+    // Solar panel subtle tilt and rotation
     if (solarGroupRef.current) {
-      solarGroupRef.current.rotation.x =
-        Math.PI / 6 + Math.sin(t * 0.3) * 0.05;
+      solarGroupRef.current.rotation.x = Math.PI / 6 + Math.sin(t * 0.3) * 0.1;
+      solarGroupRef.current.rotation.y = Math.sin(t * 0.2) * 0.05;
     }
 
-    // Particles drift upward
+    // Particles drift upward and rotate
     if (particlesRef.current) {
-      particlesRef.current.rotation.y = t * 0.05;
+      particlesRef.current.rotation.y = t * 0.03;
+      particlesRef.current.rotation.x = Math.sin(t * 0.1) * 0.02;
+    }
+
+    // Subtle pole breathing effect
+    if (poleRef.current) {
+      poleRef.current.scale.setScalar(1 + Math.sin(t * 0.5) * 0.005);
     }
   });
 
@@ -88,16 +102,16 @@ function CCTVPole({ scrollY }: CCTVPoleProps) {
           />
         </bufferGeometry>
         <pointsMaterial
-          size={0.04}
+          size={0.05}
           color="#0056B3"
           transparent
-          opacity={0.6}
+          opacity={0.7}
           sizeAttenuation
         />
       </points>
 
       {/* Main pole group */}
-      <group position={[0, -3, 0]}>
+      <group ref={poleRef} position={[0, -3, 0]}>
         {/* Concrete base */}
         <Cylinder args={[0.6, 0.7, 0.3, 8]} position={[0, 0.15, 0]}>
           <meshStandardMaterial color="#1a1a1a" metalness={0.4} roughness={0.8} />
@@ -108,14 +122,14 @@ function CCTVPole({ scrollY }: CCTVPoleProps) {
           <meshStandardMaterial
             color="#0056B3"
             emissive="#0056B3"
-            emissiveIntensity={2}
+            emissiveIntensity={2.5}
             metalness={1}
           />
         </Torus>
 
         {/* Main pole */}
         <Cylinder args={[0.07, 0.1, 7.5, 16]} position={[0, 4, 0]}>
-          <meshStandardMaterial color="#111" metalness={0.9} roughness={0.15} />
+          <meshStandardMaterial color="#6a6a6a" metalness={0.7} roughness={0.45} />
         </Cylinder>
 
         {/* Pole segment markers */}
@@ -124,7 +138,7 @@ function CCTVPole({ scrollY }: CCTVPoleProps) {
             <meshStandardMaterial
               color="#FFC107"
               emissive="#FFC107"
-              emissiveIntensity={0.8}
+              emissiveIntensity={1.2}
             />
           </Torus>
         ))}
@@ -149,7 +163,7 @@ function CCTVPole({ scrollY }: CCTVPoleProps) {
             {/* Solar cell grid lines */}
             {[-0.3, 0, 0.3].map((x, i) => (
               <Box key={i} args={[0.02, 0.06, 1.2]} position={[x, 0, 0]}>
-                <meshStandardMaterial color="#0056B3" emissive="#0056B3" emissiveIntensity={0.5} />
+                <meshStandardMaterial color="#0056B3" emissive="#0056B3" emissiveIntensity={0.7} />
               </Box>
             ))}
           </group>
@@ -166,7 +180,7 @@ function CCTVPole({ scrollY }: CCTVPoleProps) {
             </Box>
             {[-0.3, 0, 0.3].map((x, i) => (
               <Box key={i} args={[0.02, 0.06, 1.2]} position={[x, 0, 0]}>
-                <meshStandardMaterial color="#0056B3" emissive="#0056B3" emissiveIntensity={0.5} />
+                <meshStandardMaterial color="#0056B3" emissive="#0056B3" emissiveIntensity={0.7} />
               </Box>
             ))}
           </group>
@@ -174,22 +188,22 @@ function CCTVPole({ scrollY }: CCTVPoleProps) {
 
         {/* CCTV Camera Head (scroll + auto rotating) */}
         <group position={[0.4, 6.8, 0]} ref={cameraGroupRef}>
-          {/* Camera housing */}
+          {/* Camera housing (technical CCTV gray) */}
           <Box args={[0.7, 0.28, 0.28]} position={[0, 0, 0]}>
-            <meshStandardMaterial color="#1a1a1a" metalness={0.7} roughness={0.3} />
+            <meshStandardMaterial color="#7a7a7a" metalness={0.6} roughness={0.4} />
           </Box>
           {/* Lens barrel */}
           <Cylinder args={[0.11, 0.13, 0.32, 16]} position={[0.42, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-            <meshStandardMaterial color="#0a0a0a" metalness={0.9} roughness={0.1} />
+            <meshStandardMaterial color="#4a4a4a" metalness={0.8} roughness={0.3} />
           </Cylinder>
           {/* Lens glass */}
           <Sphere args={[0.1, 16, 16]} position={[0.58, 0, 0]}>
             <meshStandardMaterial
               color="#E62129"
               emissive="#E62129"
-              emissiveIntensity={3}
+              emissiveIntensity={3.5}
               transparent
-              opacity={0.9}
+              opacity={0.95}
             />
           </Sphere>
           {/* Infrared LEDs */}
@@ -198,36 +212,40 @@ function CCTVPole({ scrollY }: CCTVPoleProps) {
               <meshStandardMaterial
                 color="#FFC107"
                 emissive="#FFC107"
-                emissiveIntensity={2}
+                emissiveIntensity={2.5}
               />
             </Sphere>
           ))}
           {/* Radar scan plane */}
           <mesh ref={radarRef} position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[0, 1.2, 32, 1, 0, Math.PI / 4]} />
-            <meshBasicMaterial color="#E62129" transparent opacity={0.3} side={THREE.DoubleSide} />
+            <ringGeometry args={[0, 1.4, 32, 1, 0, Math.PI / 3]} />
+            <meshBasicMaterial color="#E62129" transparent opacity={0.4} side={THREE.DoubleSide} />
           </mesh>
         </group>
 
         {/* Orbiting Web3 rings */}
         <mesh ref={ring1Ref} position={[0, 5.5, 0]}>
           <torusGeometry args={[1.2, 0.02, 8, 80]} />
-          <meshBasicMaterial color="#0056B3" transparent opacity={0.7} />
+          <meshBasicMaterial color="#0056B3" transparent opacity={0.8} />
         </mesh>
         <mesh ref={ring2Ref} position={[0, 5.5, 0]}>
           <torusGeometry args={[1.6, 0.015, 8, 80]} />
-          <meshBasicMaterial color="#FFC107" transparent opacity={0.5} />
+          <meshBasicMaterial color="#FFC107" transparent opacity={0.6} />
+        </mesh>
+        <mesh ref={ring3Ref} position={[0, 6.0, 0]}>
+          <torusGeometry args={[2.0, 0.01, 8, 80]} />
+          <meshBasicMaterial color="#E62129" transparent opacity={0.5} />
         </mesh>
 
         {/* Data stream lines (vertical glowing cylinders) */}
-        {[0.8, -0.8, 1.2, -1.2].map((x, i) => (
+        {[0.8, -0.8, 1.2, -1.2, 1.6, -1.6].map((x, i) => (
           <Cylinder key={i} args={[0.005, 0.005, 8, 4]} position={[x, 3.5, 0]}>
             <meshStandardMaterial
-              color="#0056B3"
-              emissive="#0056B3"
+              color={i % 2 === 0 ? "#0056B3" : "#E62129"}
+              emissive={i % 2 === 0 ? "#0056B3" : "#E62129"}
               emissiveIntensity={1.5}
               transparent
-              opacity={0.3}
+              opacity={0.4}
             />
           </Cylinder>
         ))}

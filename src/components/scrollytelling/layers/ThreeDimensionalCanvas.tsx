@@ -17,7 +17,7 @@ export default function ThreeDimensionalCanvas() {
   const scrollProgress = useMascotStore((s) => s.scrollProgress);
 
   return (
-    <div className="absolute inset-0 -z-30 h-full w-full pointer-events-none">
+    <div className="fixed inset-0 -z-30 h-full w-full pointer-events-none">
       {/* Single Three.js canvas — CCTV pole scene */}
       <div className="absolute inset-0" style={{ opacity: 0.45 }}>
         <ThreeScene scrollY={scrollProgress * 5000} />
