@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Eye, Cpu, Database, ArrowDown } from "lucide-react";
 import Image from "next/image";
-import MascotScene from "./MascotScene";
+import HeroMascotScene from "./3d/HeroMascotScene";
 
 const features = [
   { icon: Eye, label: "Live CCTV Scan", color: "#0056B3" },
@@ -304,7 +304,7 @@ export default function Hero() {
             position: "relative",
           }}
         >
-          {mounted && <MascotScene scrollY={scrollY} />}
+          {mounted && <HeroMascotScene scrollY={scrollY} />}
         </div>
       </div>
 
