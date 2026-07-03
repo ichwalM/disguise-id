@@ -1,28 +1,33 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
+import bcrypt from "bcryptjs";
+import { query } from "@/lib/mysql";
+import { createSession, deleteSession } from "@/lib/session";
+
+interface UserRow {
+  id: string;
+  password_hash: string;
+  role_id: number | null;
+}
 
 export async function loginAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const supabase = await createClient();
+  const rows = await query<UserRow[]>(
+    "SELECT id, password_hash, role_id FROM mst_users WHERE email = ? LIMIT 1",
+    [email]
+  );
+  const user = rows[0];
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    return { error: error.message };
+  if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+    return { error: "Email atau password salah." };
   }
 
-  redirect("/dashboard");
+  await createSession(user.id, user.role_id);
+  return { success: true };
 }
 
 export async function logoutAction() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/login");
+  await deleteSession();
 }

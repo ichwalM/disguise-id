@@ -2,13 +2,11 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
+import { loginAction } from '@/app/actions';
 import { Eye, EyeOff, Loader } from 'lucide-react';
 
 export default function LoginForm() {
   const router = useRouter();
-  const [supabaseReady, setSupabaseReady] = useState(true);
-  const [supabase, setSupabase] = useState<any>(null);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,39 +20,23 @@ export default function LoginForm() {
     setError(null);
     setIsLoading(true);
 
-    if (!supabase) {
-      try {
-        const client = createClient();
-        setSupabase(client);
-        setSupabaseReady(true);
-        if (!client) {
-          throw new Error('Supabase client unavailable');
-        }
-      } catch {
-        setError('Authentication service is currently unavailable. Please try again later.');
-        setIsLoading(false);
-        return;
-      }
-    }
-
     try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const formData = new FormData();
+      formData.set('email', email);
+      formData.set('password', password);
 
-      if (authError) {
-        setError(authError.message || 'Login failed. Please check your credentials.');
+      const result = await loginAction(formData);
+
+      if (result?.error) {
+        setError(result.error);
         setIsLoading(false);
         return;
       }
 
-      if (data.session) {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 500);
-      }
+      setSuccess(true);
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 500);
     } catch (err) {
       console.error('Login failed:', err);
       setError('Authentication service is currently unavailable. Please try again later.');

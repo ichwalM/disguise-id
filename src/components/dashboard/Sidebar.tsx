@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
-import { 
+import { logoutAction } from '@/app/actions';
+import {
   Menu, 
   X, 
   BarChart3, 
@@ -31,12 +31,11 @@ export default function Sidebar({ userEmail = 'admin@disguise-id.com', userName 
   const [isOpen, setIsOpen] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await supabase.auth.signOut();
+      await logoutAction();
       router.push('/login');
     } catch (error) {
       console.error('Logout error:', error);
