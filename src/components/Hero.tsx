@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ArrowRight, Eye, Cpu, Database, ArrowDown } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import HeroMascot2D from "./HeroMascot2D";
 
 const features = [
@@ -34,13 +34,29 @@ const itemVariants = {
 export default function Hero() {
   const [scrollY, setScrollY] = useState(0);
   const [mounted, setMounted] = useState(false);
+  
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
 
   useEffect(() => {
     setMounted(true);
     const onScroll = () => setScrollY(window.scrollY);
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [mouseX, mouseY]);
+
+  const spotlightX = useSpring(useTransform(mouseX, (x) => x - 300), { stiffness: 100, damping: 25 });
+  const spotlightY = useSpring(useTransform(mouseY, (y) => y - 300), { stiffness: 100, damping: 25 });
 
   return (
     <section
@@ -126,6 +142,25 @@ export default function Hero() {
         }}
       />
 
+      {/* ── Dynamic Mouse Spotlight ── */}
+      {mounted && (
+        <motion.div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "600px",
+            height: "600px",
+            background: "radial-gradient(circle, rgba(0,86,179,0.15) 0%, transparent 60%)",
+            borderRadius: "50%",
+            pointerEvents: "none",
+            zIndex: 1,
+            x: spotlightX,
+            y: spotlightY,
+          }}
+        />
+      )}
+
       {/* ── Main content ── */}
       <div
         className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
@@ -205,7 +240,23 @@ export default function Hero() {
               >
                 PENYAMARAN
               </span>
-              <span style={{ display: "block", color: "#E62129" }}>WAJAH AI</span>
+              <span style={{ display: "block", color: "#E62129", position: "relative" }}>
+                WAJAH AI
+                <span
+                  style={{
+                    position: "absolute",
+                    top: 0, left: 0,
+                    width: "100%", height: "100%",
+                    color: "#E62129",
+                    background: "#080810",
+                    animation: "cyber-glitch 3s infinite linear alternate-reverse",
+                    zIndex: 2,
+                  }}
+                  aria-hidden="true"
+                >
+                  WAJAH AI
+                </span>
+              </span>
             </h1>
           </motion.div>
 
@@ -448,6 +499,14 @@ export default function Hero() {
         @keyframes dg-bounce {
           0%, 100% { transform: translateX(-50%) translateY(0); }
           50% { transform: translateX(-50%) translateY(8px); }
+        }
+        @keyframes cyber-glitch {
+          0% { clip-path: inset(10% 0 80% 0); transform: translate(-2px, 2px); }
+          20% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
+          40% { clip-path: inset(30% 0 60% 0); transform: translate(-2px, -2px); }
+          60% { clip-path: inset(60% 0 10% 0); transform: translate(2px, 2px); }
+          80% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, 2px); }
+          100% { clip-path: inset(50% 0 30% 0); transform: translate(2px, -2px); }
         }
       `}</style>
     </section>
