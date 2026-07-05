@@ -1,0 +1,755 @@
+{
+  "info": {
+    "name": "DISGUISE-ID API",
+    "description": "Koleksi Postman untuk backend disguise-api. Jalankan folder secara berurutan dari atas ke bawah — request Login menyimpan token secara otomatis ke variable collection, dan request Create menyimpan id hasil create ke variable yang dipakai request berikutnya (Get/Update/Delete).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000" },
+    { "key": "token", "value": "" },
+    { "key": "operatorToken", "value": "" },
+    { "key": "roleId", "value": "" },
+    { "key": "newUserId", "value": "" },
+    { "key": "operatorUserId", "value": "" },
+    { "key": "timelineId", "value": "" },
+    { "key": "datasetId", "value": "" },
+    { "key": "modelId", "value": "" },
+    { "key": "model2Id", "value": "" },
+    { "key": "trainingLogId", "value": "" },
+    { "key": "caseId", "value": "" },
+    { "key": "resultId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Login (Super Admin)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ichwal.admin@disguise.id\",\n  \"password\": \"AdminRahasia123!\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Ada token', () => pm.expect(json.token).to.be.a('string'));",
+                  "pm.collectionVariables.set('token', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - salah password (expect 401)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ichwal.admin@disguise.id\",\n  \"password\": \"salah\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["pm.test('Status 401', () => pm.response.to.have.status(401));"] }
+            }
+          ]
+        },
+        {
+          "name": "Get profil sendiri (/me)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/auth/me" },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] }
+            }
+          ]
+        },
+        {
+          "name": "/me tanpa token (expect 401)",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{baseUrl}}/api/auth/me" },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["pm.test('Status 401', () => pm.response.to.have.status(401));"] }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": { "method": "POST", "url": "{{baseUrl}}/api/auth/logout" },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Dashboard",
+      "item": [
+        {
+          "name": "Get stats",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/dashboard/stats" },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Ada totalUsers & recentActivities', () => { pm.expect(json).to.have.property('totalUsers'); pm.expect(json).to.have.property('recentActivities'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Roles (Super Admin only)",
+      "item": [
+        {
+          "name": "List roles",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/roles?limit=20&offset=0" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create role",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/roles",
+            "body": { "mode": "raw", "raw": "{\n  \"role_name\": \"Postman Test Role\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('roleId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get role by id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/roles/{{roleId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Update role",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/roles/{{roleId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"role_name\": \"Postman Test Role (updated)\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Get role tidak ditemukan (expect 404)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/roles/999999" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 404', () => pm.response.to.have.status(404));"] } }]
+        },
+        {
+          "name": "Delete role",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/roles/{{roleId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "4. Users (Super Admin only)",
+      "item": [
+        {
+          "name": "List users",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/users?limit=20&offset=0" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create user (Operator, role_id=2)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/users",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"postman.operator@disguise.id\",\n  \"password\": \"OperatorPass123!\",\n  \"full_name\": \"Postman Operator\",\n  \"role_id\": 2\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('newUserId', pm.response.json().id);",
+                  "pm.collectionVariables.set('operatorUserId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create user - email duplikat (expect 409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/users",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"postman.operator@disguise.id\",\n  \"password\": \"Lain123!\"\n}"
+            }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 409', () => pm.response.to.have.status(409));"] } }]
+        },
+        {
+          "name": "Get user by id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/users/{{newUserId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Update user (ganti full_name)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/users/{{newUserId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"full_name\": \"Postman Operator (updated)\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "5. Timelines",
+      "item": [
+        {
+          "name": "List timelines",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/timelines?limit=20&offset=0" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create timeline",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/timelines",
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Postman test event\",\n  \"description\": \"dibuat dari test suite\",\n  \"status\": \"open\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('timelineId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create timeline - tanpa title (expect 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/timelines",
+            "body": { "mode": "raw", "raw": "{\n  \"description\": \"tidak ada title\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }]
+        },
+        {
+          "name": "Get timeline by id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/timelines/{{timelineId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Update timeline",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/timelines/{{timelineId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"closed\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Delete timeline",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/timelines/{{timelineId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "6. Datasets",
+      "item": [
+        {
+          "name": "List datasets",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/datasets?limit=20&offset=0" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create dataset",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/datasets",
+            "body": { "mode": "raw", "raw": "{\n  \"dataset_name\": \"Postman Test Dataset\",\n  \"description\": \"dari test suite\",\n  \"total_images\": 100\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('datasetId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get dataset by id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/datasets/{{datasetId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Update dataset",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/datasets/{{datasetId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"total_images\": 250\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Delete dataset",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/datasets/{{datasetId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "7. AI Models",
+      "item": [
+        {
+          "name": "List ai-models",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/ai-models?limit=20&offset=0" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create ai-model #1",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/ai-models",
+            "body": { "mode": "raw", "raw": "{\n  \"version_name\": \"postman_vae_v1\",\n  \"architecture_type\": \"VAE\",\n  \"hyperparameters\": { \"lr\": 0.001 }\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('is_active default false', () => pm.expect(Number(json.is_active)).to.eql(0));",
+                  "pm.collectionVariables.set('modelId', json.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create ai-model #2",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/ai-models",
+            "body": { "mode": "raw", "raw": "{\n  \"version_name\": \"postman_vae_v2\",\n  \"architecture_type\": \"VAE\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('model2Id', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Activate ai-model #1",
+          "request": { "method": "PATCH", "url": "{{baseUrl}}/api/ai-models/{{modelId}}/activate" },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('is_active true', () => pm.expect(Number(pm.response.json().is_active)).to.eql(1));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Activate ai-model #2 (otomatis nonaktifkan #1)",
+          "request": { "method": "PATCH", "url": "{{baseUrl}}/api/ai-models/{{model2Id}}/activate" },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] }
+            }
+          ]
+        },
+        {
+          "name": "Get ai-model #1 (expect is_active=0, sudah dinonaktifkan)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/ai-models/{{modelId}}" },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('is_active false', () => pm.expect(Number(pm.response.json().is_active)).to.eql(0));"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Activate id tidak ada (expect 404)",
+          "request": { "method": "PATCH", "url": "{{baseUrl}}/api/ai-models/does-not-exist/activate" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 404', () => pm.response.to.have.status(404));"] } }]
+        },
+        {
+          "name": "Delete ai-model #1",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/ai-models/{{modelId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Delete ai-model #2",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/ai-models/{{model2Id}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "8. AI Training Logs",
+      "item": [
+        {
+          "name": "Create ai-model untuk training log",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/ai-models",
+            "body": { "mode": "raw", "raw": "{\n  \"version_name\": \"postman_training_target\",\n  \"architecture_type\": \"VAE\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('modelId', pm.response.json().id);"] }
+            }
+          ]
+        },
+        {
+          "name": "List training logs",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/ai-training-logs?modelId={{modelId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create training log",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/ai-training-logs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model_id\": \"{{modelId}}\",\n  \"epoch_number\": 1,\n  \"generator_loss\": 0.53,\n  \"discriminator_loss\": 0.48,\n  \"duration_seconds\": 12.5\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('trainingLogId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get training log by id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/ai-training-logs/{{trainingLogId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Update training log",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/ai-training-logs/{{trainingLogId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"generator_loss\": 0.31\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Delete training log",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/ai-training-logs/{{trainingLogId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Cleanup: delete ai-model training target",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/ai-models/{{modelId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "9. Forensic Cases",
+      "item": [
+        {
+          "name": "List forensic-cases",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/forensic-cases?limit=20&offset=0" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create forensic-case",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/forensic-cases",
+            "body": { "mode": "raw", "raw": "{\n  \"case_number\": \"POSTMAN-CASE-001\",\n  \"notes\": \"dari test suite\",\n  \"status\": \"open\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('caseId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List forensic-cases?status=open",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/forensic-cases?status=open" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Get forensic-case by id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/forensic-cases/{{caseId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Update forensic-case (verifikasi -> closed)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/forensic-cases/{{caseId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"closed\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "10. Forensic Results",
+      "item": [
+        {
+          "name": "List forensic-results",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/forensic-results?caseId={{caseId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Create forensic-result",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/forensic-results",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"case_id\": \"{{caseId}}\",\n  \"input_cctv_url\": \"https://example.com/cctv1.jpg\",\n  \"output_ai_url\": \"https://example.com/output1.jpg\",\n  \"ssim_score\": 0.91,\n  \"psnr_score\": 28.4,\n  \"processing_time_ms\": 350\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('resultId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create forensic-result - tanpa input_cctv_url (expect 400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/forensic-results",
+            "body": { "mode": "raw", "raw": "{\n  \"case_id\": \"{{caseId}}\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 400', () => pm.response.to.have.status(400));"] } }]
+        },
+        {
+          "name": "Get forensic-result by id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/forensic-results/{{resultId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Update forensic-result",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/forensic-results/{{resultId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"ssim_score\": 0.95\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Delete forensic-result",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/forensic-results/{{resultId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Cleanup: delete forensic-case",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/forensic-cases/{{caseId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "11. RBAC Scenario (Operator)",
+      "item": [
+        {
+          "name": "Login sebagai Operator (pakai user dari folder 4)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"postman.operator@disguise.id\",\n  \"password\": \"OperatorPass123!\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('roleId Operator = 2', () => pm.expect(json.user.roleId).to.eql(2));",
+                  "pm.collectionVariables.set('operatorToken', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Operator POST forensic-cases (expect 201, diizinkan)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{operatorToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/forensic-cases",
+            "body": { "mode": "raw", "raw": "{\n  \"case_number\": \"RBAC-OPERATOR-OK\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 (Operator diizinkan)', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) { pm.collectionVariables.set('caseId', pm.response.json().id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Operator POST datasets (expect 403, ditolak)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{operatorToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/datasets",
+            "body": { "mode": "raw", "raw": "{\n  \"dataset_name\": \"RBAC Should Fail\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["pm.test('Status 403 (Operator ditolak)', () => pm.response.to.have.status(403));"] }
+            }
+          ]
+        },
+        {
+          "name": "Operator GET users (expect 403, super-admin only)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{operatorToken}}", "type": "string" }] },
+            "method": "GET",
+            "url": "{{baseUrl}}/api/users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["pm.test('Status 403 (Operator ditolak)', () => pm.response.to.have.status(403));"] }
+            }
+          ]
+        },
+        {
+          "name": "Cleanup: delete case RBAC-OPERATOR-OK (Super Admin)",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/forensic-cases/{{caseId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Cleanup: delete user Operator test (Super Admin)",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/users/{{operatorUserId}}" },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));"] } }]
+        }
+      ]
+    }
+  ]
+}
