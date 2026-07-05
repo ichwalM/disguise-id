@@ -52,8 +52,8 @@ function useRimGlowTexture() {
     const ctx = canvas.getContext("2d");
     if (ctx) {
       const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-      gradient.addColorStop(0, "rgba(0,86,179,0.6)");
-      gradient.addColorStop(0.55, "rgba(230,33,41,0.18)");
+      gradient.addColorStop(0, "rgba(0,86,179,0.32)");
+      gradient.addColorStop(0.4, "rgba(230,33,41,0.08)");
       gradient.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, size, size);
@@ -199,9 +199,11 @@ function SceneContent({ scrollY }: { scrollY: number }) {
       <Sparkles count={90} scale={7} size={2.5} speed={0.3} opacity={0.7} color="#7dd3fc" />
 
       <group ref={ringsGroupRef}>
-        {/* Aura lembut di belakang seluruh karakter -- statis, tidak ikut turun ke kaki */}
-        <mesh position={[0, 0.3, -0.4]}>
-          <planeGeometry args={[5.6, 5.6]} />
+        {/* Aura lembut di belakang seluruh karakter -- statis, tidak ikut turun ke kaki.
+            Dibuat kecil & redup supaya cuma jadi halo tipis, bukan "kotak" yang
+            menutupi seluruh frame saat kena Bloom. */}
+        <mesh position={[0, 0.3, -0.6]}>
+          <planeGeometry args={[3.6, 3.6]} />
           <meshBasicMaterial
             map={rimTexture}
             transparent
@@ -245,7 +247,7 @@ export default function HeroMascotScene({ scrollY = 0 }: HeroMascotSceneProps) {
         <SceneContent scrollY={scrollY} />
 
         <EffectComposer multisampling={0}>
-          <Bloom luminanceThreshold={0.12} luminanceSmoothing={0.9} intensity={0.7} mipmapBlur />
+          <Bloom luminanceThreshold={0.4} luminanceSmoothing={0.6} intensity={0.4} mipmapBlur />
           <Vignette eskil={false} offset={0.25} darkness={0.55} />
         </EffectComposer>
       </Canvas>
