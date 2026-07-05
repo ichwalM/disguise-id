@@ -1,33 +1,24 @@
 "use server";
 
-import bcrypt from "bcryptjs";
-import { query } from "@/lib/mysql";
-import { createSession, deleteSession } from "@/lib/session";
-
-interface UserRow {
-  id: string;
-  password_hash: string;
-  role_id: number | null;
-}
+import { apiLogin, ApiError } from "@/lib/api";
+import { setAuthToken, clearAuthToken } from "@/lib/session";
 
 export async function loginAction(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const rows = await query<UserRow[]>(
-    "SELECT id, password_hash, role_id FROM mst_users WHERE email = ? LIMIT 1",
-    [email]
-  );
-  const user = rows[0];
-
-  if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-    return { error: "Email atau password salah." };
+  try {
+    const { token } = await apiLogin(email, password);
+    await setAuthToken(token);
+    return { success: true };
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      return { error: "Email atau password salah." };
+    }
+    return { error: "Tidak bisa terhubung ke server. Coba lagi nanti." };
   }
-
-  await createSession(user.id, user.role_id);
-  return { success: true };
 }
 
 export async function logoutAction() {
-  await deleteSession();
+  await clearAuthToken();
 }

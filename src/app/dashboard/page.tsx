@@ -1,21 +1,16 @@
-import { query } from "@/lib/mysql";
+import { apiFetch } from "@/lib/api";
 import StatCard from "@/components/dashboard/StatCard";
 import { Users, Activity, AlertCircle, Zap, BarChart3 } from "lucide-react";
 
-interface TimelineRow {
-  title: string;
-  created_at: string;
+interface DashboardStats {
+  totalUsers: number;
+  recentActivities: { title: string; createdAt: string }[];
 }
 
 export default async function DashboardPage() {
-  const [usersCountRows, activities] = await Promise.all([
-    query<{ total: number }[]>("SELECT COUNT(*) AS total FROM mst_users"),
-    query<TimelineRow[]>(
-      "SELECT title, created_at FROM mst_timelines ORDER BY created_at DESC LIMIT 5"
-    ),
-  ]);
-
-  const totalUsers = usersCountRows[0]?.total ?? 0;
+  const stats = await apiFetch<DashboardStats>("/api/dashboard/stats");
+  const totalUsers = stats.totalUsers;
+  const activities = stats.recentActivities;
 
   return (
     <div className="space-y-8">
@@ -71,7 +66,7 @@ export default async function DashboardPage() {
                   <div className="flex justify-between items-start">
                     <p className="font-semibold text-white">{activity.title}</p>
                     <span className="text-xs text-zinc-400 ml-2">
-                      {new Date(activity.created_at).toLocaleString()}
+                      {new Date(activity.createdAt).toLocaleString()}
                     </span>
                   </div>
                 </div>

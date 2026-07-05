@@ -1,21 +1,22 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { decrypt } from "@/lib/session";
 
-export async function proxy(request: NextRequest) {
+// Cek optimistic saja (keberadaan cookie, bukan verifikasi kriptografis) --
+// verifikasi token yang sebenarnya terjadi di backend (disguise-api) setiap
+// kali Server Component/Action memanggilnya lewat apiFetch (401 -> redirect).
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const cookie = request.cookies.get("session")?.value;
-  const session = await decrypt(cookie);
+  const hasToken = Boolean(request.cookies.get("session")?.value);
 
   // Proteksi rute /dashboard
-  if (pathname.startsWith("/dashboard") && !session?.userId) {
+  if (pathname.startsWith("/dashboard") && !hasToken) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirectTo", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // Jika sudah login dan akses /login, redirect ke /dashboard
-  if (pathname === "/login" && session?.userId) {
+  if (pathname === "/login" && hasToken) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

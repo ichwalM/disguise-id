@@ -1,11 +1,9 @@
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
-import { query } from "@/lib/mysql";
+import { apiFetch } from "@/lib/api";
 import Sidebar from "@/components/dashboard/Sidebar";
 import DashboardHeader from "@/components/dashboard/Header";
 
-interface UserRow {
-  full_name: string | null;
+interface Profile {
+  fullName: string | null;
   email: string;
 }
 
@@ -14,23 +12,14 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession();
-  if (!session?.userId) {
-    redirect("/login");
-  }
-
-  const rows = await query<UserRow[]>(
-    "SELECT full_name, email FROM mst_users WHERE id = ? LIMIT 1",
-    [session.userId]
-  );
-  const profile = rows[0];
+  const profile = await apiFetch<Profile>("/api/auth/me");
 
   return (
     <div className="min-h-screen bg-zinc-950">
       {/* Sidebar */}
       <Sidebar
-        userEmail={profile?.email || "admin@disguise-id.com"}
-        userName={profile?.full_name || "Admin"}
+        userEmail={profile.email || "admin@disguise-id.com"}
+        userName={profile.fullName || "Admin"}
       />
 
       {/* Header */}
