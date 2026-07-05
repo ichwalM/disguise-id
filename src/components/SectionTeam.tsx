@@ -107,7 +107,7 @@ export default function SectionTeam() {
       {/* Accordion / Expandable Team Gallery */}
       <motion.div
         style={{ y, opacity }}
-        className="relative z-10 flex flex-col md:flex-row w-full max-w-[1400px] h-[70vh] md:h-[500px] px-4 md:px-10 gap-2 md:gap-0"
+        className="relative z-10 flex flex-col md:flex-row w-full max-w-[1400px] h-[1000px] md:h-[500px] px-4 md:px-10 gap-2 md:gap-0"
       >
         {teamMembers.map((member, index) => {
           const isHovered = hoveredIndex === index;
@@ -236,13 +236,13 @@ export default function SectionTeam() {
                           transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
                           className="w-full h-full relative"
                         >
-                          <Image
-                            src="/images/MASKOT.png"
-                            alt="Disguise Mascot"
-                            fill
-                            className="object-contain"
-                            style={{ mixBlendMode: "screen", filter: "saturate(1.2) brightness(1.1)" }}
-                          />
+                            <Image
+                              src="/images/MASKOT.png"
+                              alt="Disguise Mascot"
+                              fill
+                              className="object-contain"
+                              style={{ filter: "saturate(1.2) brightness(1.1)" }}
+                            />
                         </motion.div>
                       </motion.div>
                     </div>

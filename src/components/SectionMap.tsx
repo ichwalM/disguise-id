@@ -41,7 +41,7 @@ export default function SectionMap() {
   const activeCount = nodes.filter((n) => n.active).length;
 
   return (
-    <section ref={sectionRef} style={{ backgroundColor: "#080810", padding: "128px 0", position: "relative", overflow: "hidden" }} id="coverage">
+    <section ref={sectionRef} style={{ backgroundColor: "#080810", position: "relative", overflow: "hidden" }} className="py-16 md:py-32" id="coverage">
       {/* Dot grid */}
       <div
         style={{
@@ -88,7 +88,7 @@ export default function SectionMap() {
           </h2>
         </motion.div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "40px", alignItems: "start" }}>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-10 items-start">
           {/* Map */}
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}

@@ -21,10 +21,10 @@ export default function SectionCTA() {
       ref={ref}
       style={{
         background: "linear-gradient(135deg, #0056B3 0%, #003d82 50%, #001f42 100%)",
-        padding: "128px 0",
         position: "relative",
         overflow: "hidden",
       }}
+      className="py-16 md:py-32"
     >
       {/* Grid */}
       <div
