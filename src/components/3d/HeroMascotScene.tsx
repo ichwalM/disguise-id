@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Sparkles } from "@react-three/drei";
-import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
@@ -27,14 +27,19 @@ function useMascotTexture(): MascotTextureData | null {
       canvas.height = Math.round(img.height * scale);
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
+
+      // Bersihkan canvas dengan background transparan penuh
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Draw MASKOT.png (yang sudah transparan) langsung tanpa manipulasi
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
       const texture = new THREE.CanvasTexture(canvas);
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.anisotropy = 8;
       texture.needsUpdate = true;
       setData({ texture, aspect: img.width / img.height });
     };
-    img.src = "/images/maskot.svg";
+    img.src = "/images/MASKOT.png";
     return () => {
       disposed = true;
     };
@@ -73,7 +78,14 @@ function MascotMesh({ texture, aspect }: { texture: THREE.CanvasTexture; aspect:
   return (
     <mesh>
       <planeGeometry args={[width, height]} />
-      <meshBasicMaterial map={texture} transparent alphaTest={0.05} depthWrite={false} toneMapped={false} />
+      <meshBasicMaterial
+        map={texture}
+        transparent
+        alphaTest={0}
+        depthWrite={false}
+        toneMapped={false}
+        premultipliedAlpha={false}
+      />
     </mesh>
   );
 }
@@ -248,7 +260,6 @@ export default function HeroMascotScene({ scrollY = 0 }: HeroMascotSceneProps) {
 
         <EffectComposer multisampling={0}>
           <Bloom luminanceThreshold={0.4} luminanceSmoothing={0.6} intensity={0.4} mipmapBlur />
-          <Vignette eskil={false} offset={0.25} darkness={0.55} />
         </EffectComposer>
       </Canvas>
     </div>

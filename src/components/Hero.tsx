@@ -2,14 +2,34 @@
 
 import { useEffect, useState } from "react";
 import { ArrowRight, Eye, Cpu, Database, ArrowDown } from "lucide-react";
-import Image from "next/image";
-import HeroMascotScene from "./3d/HeroMascotScene";
+import { motion } from "framer-motion";
+import HeroMascot2D from "./HeroMascot2D";
 
 const features = [
   { icon: Eye, label: "Live CCTV Scan", color: "#0056B3" },
   { icon: Cpu, label: "U-Net VAE Inpainting", color: "#FFC107" },
   { icon: Database, label: "PUSIKNAS POLRI Match", color: "#E62129" },
 ];
+
+const stats = [
+  { val: "94.74%", label: "SSIM ACCURACY" },
+  { val: "<50ms", label: "LATENCY" },
+  { val: "96.4%", label: "MATCH RATE" },
+];
+
+// Stagger children animation
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.12, delayChildren: 0.2 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 28 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+};
 
 export default function Hero() {
   const [scrollY, setScrollY] = useState(0);
@@ -24,6 +44,7 @@ export default function Hero() {
 
   return (
     <section
+      id="home"
       style={{
         backgroundColor: "#080810",
         minHeight: "100vh",
@@ -45,8 +66,26 @@ export default function Hero() {
         }}
       />
 
+      {/* ── Animated scan line ── */}
+      <motion.div
+        initial={{ y: "-100%" }}
+        animate={{ y: "120vh" }}
+        transition={{ duration: 6, repeat: Infinity, ease: "linear", repeatDelay: 4 }}
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          height: "2px",
+          background: "linear-gradient(90deg, transparent 0%, rgba(0,86,179,0.6) 30%, rgba(230,33,41,0.4) 70%, transparent 100%)",
+          zIndex: 2,
+          pointerEvents: "none",
+        }}
+      />
+
       {/* ── Left blue glow ── */}
-      <div
+      <motion.div
+        animate={{ scale: [1, 1.05, 1], opacity: [0.22, 0.3, 0.22] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         style={{
           position: "absolute",
           top: "-15%",
@@ -60,7 +99,9 @@ export default function Hero() {
       />
 
       {/* ── Right red glow ── */}
-      <div
+      <motion.div
+        animate={{ scale: [1, 1.08, 1], opacity: [0.18, 0.25, 0.18] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         style={{
           position: "absolute",
           bottom: "-10%",
@@ -87,6 +128,7 @@ export default function Hero() {
 
       {/* ── Main content ── */}
       <div
+        className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
         style={{
           position: "relative",
           zIndex: 10,
@@ -94,208 +136,230 @@ export default function Hero() {
           maxWidth: "1400px",
           margin: "0 auto",
           padding: "100px 32px 80px",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "48px",
-          alignItems: "center",
         }}
       >
         {/* ──── LEFT COLUMN — Text ──── */}
-        <div>
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {/* Status chip */}
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "10px",
-              border: "1px solid rgba(0,86,179,0.5)",
-              background: "rgba(0,86,179,0.1)",
-              backdropFilter: "blur(12px)",
-              padding: "6px 16px",
-              marginBottom: "32px",
-              fontFamily: "var(--font-jetbrains-mono), monospace",
-              fontSize: "11px",
-              color: "#0056B3",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-            }}
-          >
-            <span
+          <motion.div variants={itemVariants}>
+            <div
               style={{
-                width: "8px",
-                height: "8px",
-                background: "#E62129",
-                borderRadius: "50%",
-                display: "inline-block",
-                animation: "dg-ping 1.5s ease-in-out infinite",
-              }}
-            />
-            SISTEM AKTIF — CCTV ONLINE
-          </div>
-
-          {/* Main headline */}
-          <h1
-            style={{
-              fontFamily: "var(--font-space-grotesk), sans-serif",
-              fontSize: "clamp(48px, 6.5vw, 86px)",
-              fontWeight: 900,
-              lineHeight: 0.95,
-              letterSpacing: "-0.03em",
-              color: "#ffffff",
-              marginBottom: "24px",
-              textTransform: "uppercase",
-            }}
-          >
-            BONGKAR<br />
-            <span
-              style={{
-                WebkitTextStroke: "2px #0056B3",
-                color: "transparent",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "10px",
+                border: "1px solid rgba(0,86,179,0.5)",
+                background: "rgba(0,86,179,0.1)",
+                backdropFilter: "blur(12px)",
+                padding: "6px 16px",
+                marginBottom: "32px",
+                fontFamily: "var(--font-jetbrains-mono), monospace",
+                fontSize: "11px",
+                color: "#0056B3",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
               }}
             >
-              PENYAMARAN
-            </span>
-            <br />
-            <span style={{ color: "#E62129" }}>WAJAH AI</span>
-          </h1>
+              <span
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  background: "#E62129",
+                  borderRadius: "50%",
+                  display: "inline-block",
+                  animation: "dg-ping 1.5s ease-in-out infinite",
+                }}
+              />
+              SISTEM AKTIF — CCTV ONLINE
+            </div>
+          </motion.div>
+
+          {/* Main headline with glitch */}
+          <motion.div variants={itemVariants}>
+            <h1
+              style={{
+                fontFamily: "var(--font-space-grotesk), sans-serif",
+                fontSize: "clamp(48px, 6.5vw, 86px)",
+                fontWeight: 900,
+                lineHeight: 0.95,
+                letterSpacing: "-0.03em",
+                color: "#ffffff",
+                marginBottom: "24px",
+                textTransform: "uppercase",
+              }}
+            >
+              <span
+                style={{ display: "block", color: "#ffffff" }}
+              >
+                BONGKAR
+              </span>
+              <span
+                style={{
+                  display: "block",
+                  WebkitTextStroke: "2px #0056B3",
+                  color: "transparent",
+                }}
+              >
+                PENYAMARAN
+              </span>
+              <span style={{ display: "block", color: "#E62129" }}>WAJAH AI</span>
+            </h1>
+          </motion.div>
 
           {/* Subtitle */}
-          <p
-            style={{
-              fontFamily: "var(--font-inter), sans-serif",
-              fontSize: "15px",
-              color: "rgba(255,255,255,0.5)",
-              lineHeight: 1.8,
-              maxWidth: "480px",
-              marginBottom: "32px",
-            }}
-          >
-            Ketika penjahat menyamarkan wajah dengan masker atau kacamata,{" "}
-            <strong style={{ color: "rgba(255,255,255,0.85)", fontWeight: 600 }}>
-              AI kami merekonstruksi kembali wajah aslinya
-            </strong>{" "}
-            dari rekaman CCTV secara real-time, lalu mencocokkan dengan database DPO POLRI.
-          </p>
+          <motion.div variants={itemVariants}>
+            <p
+              style={{
+                fontFamily: "var(--font-inter), sans-serif",
+                fontSize: "15px",
+                color: "rgba(255,255,255,0.5)",
+                lineHeight: 1.8,
+                maxWidth: "480px",
+                marginBottom: "32px",
+              }}
+            >
+              Ketika penjahat menyamarkan wajah dengan masker atau kacamata,{" "}
+              <strong style={{ color: "rgba(255,255,255,0.85)", fontWeight: 600 }}>
+                AI kami merekonstruksi kembali wajah aslinya
+              </strong>{" "}
+              dari rekaman CCTV secara real-time, lalu mencocokkan dengan database DPO POLRI.
+            </p>
+          </motion.div>
 
           {/* Feature chips */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "36px" }}>
-            {features.map(({ icon: Icon, label, color }) => (
-              <div
-                key={label}
+          <motion.div variants={itemVariants}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "36px" }}>
+              {features.map(({ icon: Icon, label, color }, i) => (
+                <motion.div
+                  key={label}
+                  whileHover={{ scale: 1.04, boxShadow: `0 0 16px ${color}40` }}
+                  transition={{ duration: 0.2 }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    border: `1px solid ${color}40`,
+                    background: `${color}10`,
+                    padding: "8px 14px",
+                    fontFamily: "var(--font-jetbrains-mono), monospace",
+                    fontSize: "11px",
+                    color,
+                    letterSpacing: "0.08em",
+                    cursor: "default",
+                  }}
+                >
+                  <Icon size={13} />
+                  {label}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div variants={itemVariants}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "14px", marginBottom: "48px" }}>
+              <motion.button
+                whileHover={{ scale: 1.03, boxShadow: "0 0 24px rgba(230,33,41,0.5)" }}
+                whileTap={{ scale: 0.97 }}
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px",
-                  border: `1px solid ${color}40`,
-                  background: `${color}10`,
-                  padding: "8px 14px",
-                  fontFamily: "var(--font-jetbrains-mono), monospace",
-                  fontSize: "11px",
-                  color,
-                  letterSpacing: "0.08em",
+                  gap: "10px",
+                  background: "#E62129",
+                  color: "#fff",
+                  border: "none",
+                  padding: "15px 30px",
+                  fontFamily: "var(--font-space-grotesk), sans-serif",
+                  fontWeight: 900,
+                  fontSize: "13px",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
                 }}
               >
-                <Icon size={13} />
-                {label}
-              </div>
-            ))}
-          </div>
-
-          {/* CTA Buttons */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "14px", marginBottom: "48px" }}>
-            <button
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                background: "#E62129",
-                color: "#fff",
-                border: "none",
-                padding: "15px 30px",
-                fontFamily: "var(--font-space-grotesk), sans-serif",
-                fontWeight: 900,
-                fontSize: "13px",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                cursor: "pointer",
-                transition: "opacity 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-            >
-              LIHAT DEMO SISTEM
-              <ArrowRight size={16} />
-            </button>
-            <a
-              href="/dashboard"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                background: "transparent",
-                color: "#fff",
-                border: "2px solid rgba(255,255,255,0.25)",
-                padding: "15px 30px",
-                fontFamily: "var(--font-space-grotesk), sans-serif",
-                fontWeight: 900,
-                fontSize: "13px",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                cursor: "pointer",
-                textDecoration: "none",
-                transition: "border-color 0.2s",
-              }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.7)")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.25)")}
-            >
-              COMMAND CENTER
-            </a>
-          </div>
+                LIHAT DEMO SISTEM
+                <ArrowRight size={16} />
+              </motion.button>
+              <motion.a
+                href="/dashboard"
+                whileHover={{ scale: 1.03, borderColor: "rgba(255,255,255,0.7)" }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  background: "transparent",
+                  color: "#fff",
+                  border: "2px solid rgba(255,255,255,0.25)",
+                  padding: "15px 30px",
+                  fontFamily: "var(--font-space-grotesk), sans-serif",
+                  fontWeight: 900,
+                  fontSize: "13px",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                  textDecoration: "none",
+                  transition: "all 0.2s",
+                }}
+              >
+                COMMAND CENTER
+              </motion.a>
+            </div>
+          </motion.div>
 
           {/* SSIM accuracy badge */}
-          <div
-            style={{
-              display: "inline-flex",
-              gap: "24px",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
-              paddingTop: "24px",
-            }}
-          >
-            {[
-              { val: "94.74%", label: "SSIM ACCURACY" },
-              { val: "<50ms", label: "LATENCY" },
-              { val: "96.4%", label: "MATCH RATE" },
-            ].map((s) => (
-              <div key={s.label}>
-                <div
-                  style={{
-                    fontFamily: "var(--font-space-grotesk), sans-serif",
-                    fontWeight: 900,
-                    fontSize: "22px",
-                    color: "#FFC107",
-                    lineHeight: 1,
-                  }}
+          <motion.div variants={itemVariants}>
+            <div
+              style={{
+                display: "inline-flex",
+                gap: "24px",
+                borderTop: "1px solid rgba(255,255,255,0.08)",
+                paddingTop: "24px",
+              }}
+            >
+              {stats.map((s, i) => (
+                <motion.div
+                  key={s.label}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  {s.val}
-                </div>
-                <div
-                  style={{
-                    fontFamily: "var(--font-jetbrains-mono), monospace",
-                    fontSize: "9px",
-                    color: "rgba(255,255,255,0.35)",
-                    letterSpacing: "0.15em",
-                    marginTop: "4px",
-                  }}
-                >
-                  {s.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-space-grotesk), sans-serif",
+                      fontWeight: 900,
+                      fontSize: "22px",
+                      color: "#FFC107",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {s.val}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-jetbrains-mono), monospace",
+                      fontSize: "9px",
+                      color: "rgba(255,255,255,0.35)",
+                      letterSpacing: "0.15em",
+                      marginTop: "4px",
+                    }}
+                  >
+                    {s.label}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </motion.div>
 
         {/* ──── RIGHT COLUMN — Mascot 3D ──── */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, x: 60 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.9, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           style={{
             height: "600px",
             display: "flex",
@@ -304,12 +368,30 @@ export default function Hero() {
             position: "relative",
           }}
         >
-          {mounted && <HeroMascotScene scrollY={scrollY} />}
-        </div>
+          {/* Decorative corner brackets */}
+          <div style={{ position: "absolute", inset: "20px", pointerEvents: "none" }}>
+            {/* TL */}
+            <div style={{ position: "absolute", top: 0, left: 0, width: "30px", height: "30px", borderTop: "2px solid rgba(0,86,179,0.4)", borderLeft: "2px solid rgba(0,86,179,0.4)" }} />
+            {/* TR */}
+            <div style={{ position: "absolute", top: 0, right: 0, width: "30px", height: "30px", borderTop: "2px solid rgba(0,86,179,0.4)", borderRight: "2px solid rgba(0,86,179,0.4)" }} />
+            {/* BL */}
+            <div style={{ position: "absolute", bottom: 0, left: 0, width: "30px", height: "30px", borderBottom: "2px solid rgba(230,33,41,0.4)", borderLeft: "2px solid rgba(230,33,41,0.4)" }} />
+            {/* BR */}
+            <div style={{ position: "absolute", bottom: 0, right: 0, width: "30px", height: "30px", borderBottom: "2px solid rgba(230,33,41,0.4)", borderRight: "2px solid rgba(230,33,41,0.4)" }} />
+          </div>
+          {/* HUD label */}
+          <div style={{ position: "absolute", top: "24px", left: "32px", fontFamily: "var(--font-jetbrains-mono), monospace", fontSize: "9px", color: "rgba(0,86,179,0.5)", letterSpacing: "0.2em" }}>
+            SUBJECT_SCAN_3D
+          </div>
+          {mounted && <HeroMascot2D scrollY={scrollY} />}
+        </motion.div>
       </div>
 
       {/* ── HUD top-right ── */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
         style={{
           position: "absolute",
           top: "90px",
@@ -328,11 +410,14 @@ export default function Hero() {
         <div>SYS_VER: 2.6.1</div>
         <div>MODEL: vae_nusantara_best_v2.pth</div>
         <div>CAM_ONLINE: 512</div>
-        <div style={{ color: "rgba(230,33,41,0.65)" }}>SCANNING...</div>
-      </div>
+        <div style={{ color: "rgba(230,33,41,0.65)", animation: "hud-blink 1.2s step-end infinite" }}>SCANNING...</div>
+      </motion.div>
 
       {/* ── Scroll hint ── */}
-      <div
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 0.5 }}
         style={{
           position: "absolute",
           bottom: "28px",
@@ -352,7 +437,7 @@ export default function Hero() {
       >
         <ArrowDown size={18} />
         SCROLL
-      </div>
+      </motion.div>
 
       {/* ── Keyframes ── */}
       <style>{`

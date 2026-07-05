@@ -320,7 +320,7 @@ export default function FloatingMascot() {
             }}
           >
             <Image
-              src="/images/maskot.svg"
+              src="/images/MASKOT.png"
               alt="Mascot Companion"
               width={75}
               height={85}
@@ -329,6 +329,8 @@ export default function FloatingMascot() {
                 objectFit: "contain",
                 width: "75px",
                 height: "auto",
+                mixBlendMode: "screen",
+                filter: "saturate(1.2) brightness(1.1)",
               }}
             />
           </div>

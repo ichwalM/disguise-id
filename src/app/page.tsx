@@ -7,10 +7,12 @@ import SectionStats from "@/components/SectionStats";
 import SectionCTA from "@/components/SectionCTA";
 import FloatingMascot from "@/components/FloatingMascot";
 import SectionTeam from "@/components/SectionTeam";
+import GlobalBackground from "@/components/3d/GlobalBackground";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-50 font-sans selection:bg-emerald-500/30">
+    <main className="min-h-screen bg-zinc-950 text-zinc-50 font-sans selection:bg-emerald-500/30 relative">
+      <GlobalBackground />
       <Navbar />
       <Hero />
       <SectionCCTV />

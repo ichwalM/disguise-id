@@ -237,10 +237,11 @@ export default function SectionTeam() {
                           className="w-full h-full relative"
                         >
                           <Image
-                            src="/images/maskot.svg"
+                            src="/images/MASKOT.png"
                             alt="Disguise Mascot"
                             fill
                             className="object-contain"
+                            style={{ mixBlendMode: "screen", filter: "saturate(1.2) brightness(1.1)" }}
                           />
                         </motion.div>
                       </motion.div>
